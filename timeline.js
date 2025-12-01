@@ -4,15 +4,7 @@
 document.querySelectorAll('.experience-level:nth-child(2)').forEach(level => {
     level.addEventListener('click', function() {
         this.classList.toggle('expanded');
-        
-        // Simple animation
-        if (this.classList.contains('expanded')) {
-            this.style.maxHeight = '500px';
-            this.style.opacity = '1';
-        } else {
-            this.style.maxHeight = '0';
-            this.style.opacity = '0.7';
-        }
+        this.classList.toggle('collapsed');
     });
 });
 

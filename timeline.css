@@ -178,10 +178,20 @@
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 15px;
+    max-height: 500px;
+    overflow: hidden;
+    opacity: 1;
 }
 
 .experience-level:nth-child(2):hover {
     background-color: #e8eef7;
+}
+
+.experience-level:nth-child(2).collapsed {
+    max-height: 0;
+    padding: 0 15px;
+    overflow: hidden;
+    opacity: 0;
 }
 
 .experience-level:nth-child(2) h4::before {
