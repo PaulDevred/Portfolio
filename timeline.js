@@ -1,18 +1,26 @@
 // Timeline specific interactions
 
-// Popup effect for level 2 details
-document.querySelectorAll('.experience-level:nth-child(2)').forEach(level => {
-    level.addEventListener('click', function() {
-        this.classList.toggle('expanded');
+document.addEventListener('DOMContentLoaded', function() {
+    // Au clic sur h4 du niveau 2 UNIQUEMENT, toggle la visibilité de tout sauf le h4
+    document.querySelectorAll('.experience-level:nth-child(3) h4').forEach(h4 => {
+        h4.style.cursor = 'pointer';
+        const parent = h4.closest('.experience-level');
         
-        // Simple animation
-        if (this.classList.contains('expanded')) {
-            this.style.maxHeight = '500px';
-            this.style.opacity = '1';
-        } else {
-            this.style.maxHeight = '0';
-            this.style.opacity = '0.7';
-        }
+        h4.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            // Masque/affiche tout sauf le h4
+            const list = parent.querySelector('.experience-list');
+            if (list) {
+                if (list.style.display === 'none') {
+                    list.style.display = '';
+                    parent.classList.remove('collapsed');
+                } else {
+                    list.style.display = 'none';
+                    parent.classList.add('collapsed');
+                }
+            }
+        });
     });
 });
 
