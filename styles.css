@@ -180,6 +180,21 @@ header {
     color: #666;
 }
 
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 20px 10px;
+}
+
+.tag {
+    background: var(--secondary-color);
+    color: var(--white);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
 .project-link {
     display: inline-block;
     padding: 10px 20px;

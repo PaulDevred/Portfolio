@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darwin Simulator - Portfolio</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../projet.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">Mon Portfolio</div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#accueil">Accueil</a></li>
+                    <li><a href="../index.html#projets">Projets</a></li>
+                    <li><a href="../timeline.html">Mon Parcours</a></li>
+                    <li><a href="../index.html#competences">Compétences</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <a href="../index.html#projets" class="back-link">← Retour aux projets</a>
+            <h1>Darwin Simulator</h1>
+            <p class="project-subtitle">À la Croisée du Vivant et du Numérique</p>
+            <div class="project-meta">
+                <span class="meta-item">📅 Mars 2023 - Septembre 2023</span>
+                <span class="meta-item">👥 4 personnes</span>
+                <span class="meta-item">🎓 Projet universitaire</span>
+            </div>
+            <div class="project-tags-hero">
+                <span class="tag">C#</span>
+                <span class="tag">Unity 3D</span>
+                <span class="tag">NEAT</span>
+                <span class="tag">Réseaux de neurones</span>
+                <span class="tag">Git</span>
+                <span class="tag">TDD</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Content -->
+    <main class="project-content">
+        <div class="container">
+            
+            <!-- Introduction -->
+            <section class="content-section">
+                <h2>À la Croisée du Vivant et du Numérique</h2>
+                <p>Darwin Simulator est une <strong>simulation en trois dimensions</strong> des mécanismes de <strong>sélection naturelle</strong> et de <strong>mutations génétiques</strong> comme on peut les observer dans la nature ou dans la théorie de l'évolution de Charles Darwin.</p>
+                <p>Cette simulation est matérialisée par un plateau intégrant de la nourriture, des obstacles et des dangers susceptibles de provoquer la mort des entités. Chaque entité représente un organisme vivant simplifié, doté d'un <strong>cerveau artificiel</strong> simulé par un <strong>réseau de neurones évolutif</strong>.</p>
+                <p>Ce projet permet à l'utilisateur d'<strong>observer</strong>, de <strong>comprendre</strong> et d'<strong>expérimenter</strong> avec l'évolution génétique et comportementale d'une population virtuelle au fil du temps.</p>
+            </section>
+
+            <!-- Objectifs -->
+            <section class="content-section">
+                <h2>L'Exploration de l'Évolution Artificielle : Objectifs et Défis Initiaux</h2>
+                <h3>Objectifs du projet</h3>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3>🧠 Réseau évolutif</h3>
+                        <p>Concevoir un réseau de neurones capable d'adapter le comportement des entités selon leur environnement.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>🧬 Mutations génétiques</h3>
+                        <p>Intégrer un mécanisme de mutation permettant à l'espèce d'évoluer au fil des générations.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>👁️ Visualisation</h3>
+                        <p>Offrir une visualisation claire des phénomènes d'évolution et une compréhension intuitive des mécanismes comportementaux.</p>
+                    </div>
+                </div>
+
+                <h3>Enjeux du projet</h3>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h4>🔬 Réalisme vs Efficacité</h4>
+                        <p>Concilier réalisme biologique et efficacité algorithmique : simuler des comportements naturels complexes tout en créant une simulation efficace et fluide.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h4>🤖 Architecture neuronale</h4>
+                        <p>Créer une architecture neuronale capable d'apprendre convenablement avec pour seule supervision, la sélection naturelle.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h4>📚 Compréhension utilisateur</h4>
+                        <p>Assurer la compréhension scientifique de l'utilisateur : l'utilisateur doit pouvoir observer et comprendre le fonctionnement et les phénomènes d'évolution.</p>
+                    </div>
+                </div>
+
+                <h3>Risques identifiés</h3>
+                <div class="objectives-grid">
+                    <div class="objective-card risk-card">
+                        <h4>⚠️ Performance</h4>
+                        <p>La complexité de l'algorithme NEAT, couplée au fait que chaque entité utilise un réseau de neurones, implique un risque important de manque de performance et de scalabilité.</p>
+                    </div>
+                    <div class="objective-card risk-card">
+                        <h4>⚠️ Pertinence de l'algorithme</h4>
+                        <p>Rien ne nous garantissait l'émergence de comportements visibles ou même pertinents avec un algorithme évolutif.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mon rôle -->
+            <section class="content-section highlight-section">
+                <h2>Donner Vie au Monde Virtuel : Mon Rôle dans la Conception et le Développement</h2>
+                <p>J'ai été responsable de la <strong>conception et du développement du réseau de neurones évolutif</strong> ainsi que de son <strong>interface de visualisation</strong>.</p>
+                
+                <h3>Le réseau de neurones NEAT</h3>
+                <p>J'ai implémenté l'algorithme <strong>NEAT</strong> (Neuroevolution of Augmenting Topologies) qui permet de faire évoluer, génération après génération, les réseaux de neurones contrôlant les entités.</p>
+                
+                <div class="neural-io">
+                    <div class="io-column">
+                        <h4>Entrées du réseau</h4>
+                        <ul>
+                            <li>Faim / Santé / Âge</li>
+                            <li>Vitesse de déplacement</li>
+                            <li>Distance et angle à la nourriture</li>
+                            <li>Distance et angle aux autres entités</li>
+                            <li>Distance et angle aux obstacles</li>
+                            <li>Nombre d'entités proches</li>
+                            <li>Chronomètre interne</li>
+                        </ul>
+                    </div>
+                    <div class="io-column">
+                        <h4>Sorties du réseau</h4>
+                        <ul>
+                            <li>Vitesse de déplacement</li>
+                            <li>Vitesse de rotation</li>
+                            <li>Reproduction</li>
+                            <li>Reset chronomètre</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Types de mutations implémentées</h3>
+                <ul class="mutation-list">
+                    <li>Création d'une liaison entre deux neurones existants</li>
+                    <li>Suppression d'une liaison</li>
+                    <li>Insertion d'un neurone intermédiaire sur une liaison existante</li>
+                    <li>Augmentation du poids d'une liaison</li>
+                    <li>Diminution du poids d'une liaison</li>
+                </ul>
+
+                <h3>Interface de visualisation</h3>
+                <p>J'ai conçu une interface permettant de <strong>visualiser en temps réel</strong> la structure du cerveau de chaque entité :</p>
+                <ul>
+                    <li>Neurones représentés par des cercles</li>
+                    <li>Connexions positives en <span class="green">vert</span>, négatives en <span class="red">rouge</span></li>
+                    <li>Épaisseur des traits proportionnelle au poids synaptique</li>
+                </ul>
+            </section>
+
+            <!-- Résultats -->
+            <section class="content-section">
+                <h2>Quand la Vie Émerge du Code : Résultats et Comportements Observés</h2>
+                <div class="results-grid">
+                    <div class="result-item">
+                        <span class="result-number">100+</span>
+                        <span class="result-label">Entités simultanées</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number">∞</span>
+                        <span class="result-label">Générations possibles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number">5</span>
+                        <span class="result-label">Types de mutations</span>
+                    </div>
+                </div>
+                
+                <h3>Comportements émergents observés</h3>
+                <ul>
+                    <li>Entités apprenant à <strong>se diriger vers la nourriture</strong></li>
+                    <li>Adaptation de la vitesse selon la faim ou la santé (<strong>économie d'énergie</strong>)</li>
+                    <li>Différenciation comportementale entre espèces (mobilité vs résistance vs reproduction)</li>
+                </ul>
+            </section>
+
+            <!-- Évolutions futures -->
+            <section class="content-section">
+                <h2>Vers un Écosystème Auto-Régulé : Les Pistes d'Évolution du Projet</h2>
+                <div class="evolution-list">
+                    <div class="evolution-item">
+                        <h4>🔧 Performance</h4>
+                        <p>Vectorisation des calculs neuronaux pour simuler des milliers d'individus.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <h4>🍖 Métabolisme</h4>
+                        <p>Système de digestion et de transformation énergétique réaliste.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <h4>🔄 Cycle énergétique</h4>
+                        <p>Conservation de l'énergie et recyclage de la matière dans l'écosystème.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <h4>🦁 Prédation</h4>
+                        <p>Introduction de chaînes alimentaires et comportements de chasse/fuite.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ce que j'ai appris -->
+            <section class="content-section">
+                <h2>Ce que l'Évolution M'a Appris : Analyse et Enseignements Personnels</h2>
+                <blockquote>
+                    "Darwin Simulator m'a appris à trouver un équilibre entre la rigueur scientifique et la créativité du développeur. Il a confirmé mon goût pour les projets où la technique sert une finalité intellectuelle : comprendre, simuler, expliquer."
+                </blockquote>
+                <p>Ce projet m'a fait franchir une étape dans ma compréhension de l'<strong>intelligence artificielle</strong>. J'ai appris à concevoir un système qui ne suit pas des règles figées, mais qui <strong>apprend, s'adapte et se transforme</strong> en fonction de son environnement.</p>
+            </section>
+
+            <!-- Compétences -->
+            <section class="content-section">
+                <h2>Compétences mobilisées</h2>
+                <div class="skills-section">
+                    <div class="skill-category">
+                        <h4>Techniques</h4>
+                        <div class="skill-tags">
+                            <span class="tag">C#</span>
+                            <span class="tag">Unity 3D</span>
+                            <span class="tag">Algorithmie</span>
+                            <span class="tag">Réseaux de neurones</span>
+                            <span class="tag">Git</span>
+                            <span class="tag">TDD</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Transverses</h4>
+                        <div class="skill-tags">
+                            <span class="tag">Gestion de projet</span>
+                            <span class="tag">Agilité (SCRUM)</span>
+                            <span class="tag">Travail en équipe</span>
+                            <span class="tag">Communication</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mon Portfolio. Tous droits réservés.</p>
+            <div class="social-links">
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>
