@@ -1,4 +1,4 @@
-// Simulation de réaction-diffusion (Gray-Scott) - Optimisée
+// Simulation de réaction-diffusion (Gray-Scott) - Optimisée et réutilisable
 class DiffusionSimulation {
     constructor(canvas) {
         this.canvas = canvas;
@@ -42,21 +42,22 @@ class DiffusionSimulation {
         this.animate = this.animate.bind(this);
         window.addEventListener('resize', () => this.handleResize());
         
-        // Interaction souris
+        // Interaction souris - capturer au niveau du document pour fonctionner partout
         this.isMouseDown = false;
         this.mouseX = 0;
         this.mouseY = 0;
         this.brushSize = 5;
         this.brushIntensity = 1.0;
         
-        this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
-        this.canvas.addEventListener('mouseup', () => this.onMouseUp());
-        this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        this.canvas.addEventListener('mouseleave', () => this.onMouseUp());
+        // Utiliser document pour capturer les événements même quand le canvas est derrière
+        document.addEventListener('mousedown', (e) => this.onMouseDown(e));
+        document.addEventListener('mouseup', () => this.onMouseUp());
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
         
-        this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
-        this.canvas.addEventListener('touchend', () => this.onMouseUp());
-        this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
+        // Support tactile
+        document.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        document.addEventListener('touchend', () => this.onMouseUp());
+        document.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
     }
     
     generateColorTable() {
@@ -76,37 +77,44 @@ class DiffusionSimulation {
     }
     
     onMouseDown(e) {
+        // Ne pas interférer avec les clics sur les éléments interactifs
+        if (e.target.closest('a, button, input, textarea, .project-card, .content-section, .timeline-content, .contact-form, .nav-menu')) {
+            return;
+        }
         this.isMouseDown = true;
         this.updateMousePosition(e);
         this.paintAtMouse();
     }
-    
+
     onMouseUp() {
         this.isMouseDown = false;
     }
-    
+
     onMouseMove(e) {
         this.updateMousePosition(e);
         if (this.isMouseDown) {
             this.paintAtMouse();
         }
     }
-    
+
     onTouchStart(e) {
+        // Ne pas interférer avec les touches sur les éléments interactifs
+        if (e.target.closest('a, button, input, textarea, .project-card, .content-section, .timeline-content, .contact-form, .nav-menu')) {
+            return;
+        }
         e.preventDefault();
         this.isMouseDown = true;
         const touch = e.touches[0];
         this.updateMousePosition(touch);
         this.paintAtMouse();
     }
-    
+
     onTouchMove(e) {
+        if (!this.isMouseDown) return;
         e.preventDefault();
         const touch = e.touches[0];
         this.updateMousePosition(touch);
-        if (this.isMouseDown) {
-            this.paintAtMouse();
-        }
+        this.paintAtMouse();
     }
     
     updateMousePosition(e) {
@@ -286,15 +294,34 @@ class DiffusionSimulation {
     }
 }
 
-// Démarrer la simulation au chargement
-document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('diffusionCanvas');
-    if (canvas) {
+// Démarrer la simulation au chargement - Auto-initialisation
+(function() {
+    function initDiffusion() {
+        // Chercher un canvas existant ou en créer un nouveau
+        let canvas = document.getElementById('diffusionCanvas');
+        
+        if (!canvas) {
+            // Créer le canvas automatiquement
+            canvas = document.createElement('canvas');
+            canvas.id = 'diffusionCanvas';
+            document.body.insertBefore(canvas, document.body.firstChild);
+        }
+        
+        // Appliquer les styles via CSS (définis dans styles.css)
+        // Mais s'assurer que pointer-events est actif pour l'interaction
+        canvas.style.pointerEvents = 'auto';
+        
         const sim = new DiffusionSimulation(canvas);
-        // S'assurer que le canvas est redimensionné correctement
-        setTimeout(() => {
-            sim.handleResize();
-        }, 100);
+        setTimeout(() => sim.handleResize(), 100);
         sim.animate();
+        
+        // Exposer globalement si besoin
+        window.diffusionSim = sim;
     }
-});
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDiffusion);
+    } else {
+        initDiffusion();
+    }
+})();
