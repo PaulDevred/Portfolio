@@ -180,6 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('diffusionCanvas');
     if (canvas) {
         const sim = new DiffusionSimulation(canvas);
+        // S'assurer que le canvas est redimensionné correctement
+        setTimeout(() => {
+            sim.handleResize();
+        }, 100);
         sim.animate();
     }
 });
