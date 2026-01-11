@@ -9,10 +9,21 @@ class DiffusionSimulation {
         // Paramètres de la réaction-diffusion
         this.dA = 1.0; // Diffusion rate for A
         this.dB = 0.5; // Diffusion rate for B
-        this.feed = 0.029;
-        this.kill = 0.057;
         
-        this.frameCount = 0;
+        // Vitesse globale de la simulation (1 = normal, 2 = 2x plus rapide, 0.5 = 2x plus lent)
+        this.speed = 1;
+        
+        // Paramètres de base et amplitude de variation
+        this.baseFeed = 0.029;
+        this.baseKill = 0.057;
+        this.feedAmplitude = 0.003; // Variation légère pour ne pas casser les motifs
+        this.killAmplitude = 0.002;
+        
+        // Vitesses de variation différentes pour créer des motifs organiques
+        this.feedSpeed = 0.0008;
+        this.killSpeed = 0.0011;
+        
+        this.time = 0;
         
         // Grilles
         this.resolution = 4;
@@ -70,41 +81,40 @@ class DiffusionSimulation {
     }
     
     update() {
-        for (let y = 0; y < this.gridH; y++) {
-            for (let x = 0; x < this.gridW; x++) {
-                const idx = y * this.gridW + x;
-                const a = this.A[idx];
-                const b = this.B[idx];
-                
-                const lapA = this.laplacian(this.A, x, y);
-                const lapB = this.laplacian(this.B, x, y);
-                
-                // Gray-Scott reaction-diffusion equations
-                let nextA = a + (this.dA * lapA) - a * b * b + this.feed * (1 - a);
-                let nextB = b + (this.dB * lapB) + a * b * b - (this.kill + this.feed) * b;
-                
-                nextA = Math.max(0, Math.min(1, nextA));
-                nextB = Math.max(0, Math.min(1, nextB));
-                
-                this.nextA[idx] = nextA;
-                this.nextB[idx] = nextB;
+        // Variation continue des paramètres avec des oscillations déphasées
+        this.time += this.speed;
+        const feed = this.baseFeed + Math.sin(this.time * this.feedSpeed) * this.feedAmplitude;
+        const kill = this.baseKill + Math.sin(this.time * this.killSpeed + 1.5) * this.killAmplitude;
+        
+        // Nombre d'itérations par frame basé sur la vitesse
+        const iterations = Math.max(1, Math.round(this.speed));
+        
+        for (let iter = 0; iter < iterations; iter++) {
+            for (let y = 0; y < this.gridH; y++) {
+                for (let x = 0; x < this.gridW; x++) {
+                    const idx = y * this.gridW + x;
+                    const a = this.A[idx];
+                    const b = this.B[idx];
+                    
+                    const lapA = this.laplacian(this.A, x, y);
+                    const lapB = this.laplacian(this.B, x, y);
+                    
+                    // Gray-Scott reaction-diffusion equations avec paramètres variables
+                    let nextA = a + (this.dA * lapA) - a * b * b + feed * (1 - a);
+                    let nextB = b + (this.dB * lapB) + a * b * b - (kill + feed) * b;
+                    
+                    nextA = Math.max(0, Math.min(1, nextA));
+                    nextB = Math.max(0, Math.min(1, nextB));
+                    
+                    this.nextA[idx] = nextA;
+                    this.nextB[idx] = nextB;
+                }
             }
+            
+            // Swap grids
+            [this.A, this.nextA] = [this.nextA, this.A];
+            [this.B, this.nextB] = [this.nextB, this.B];
         }
-        
-        // // Ajouter une perturbation aléatoire tous les 50 frames pour maintenir le mouvement
-        // this.frameCount++;
-        // if (this.frameCount % 50 === 0) {
-        //     for (let i = 0; i < 30; i++) {
-        //         const x = Math.floor(Math.random() * this.gridW);
-        //         const y = Math.floor(Math.random() * this.gridH);
-        //         const idx = y * this.gridW + x;
-        //         this.nextB[idx] = Math.max(this.nextB[idx], 0.5 + Math.random() * 0.3);
-        //     }
-        // }
-        
-        // Swap grids
-        [this.A, this.nextA] = [this.nextA, this.A];
-        [this.B, this.nextB] = [this.nextB, this.B];
     }
     
     render() {
