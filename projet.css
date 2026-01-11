@@ -2,6 +2,25 @@
    STYLES POUR LES PAGES DE PROJET
    =========================================== */
 
+/* Material Icons */
+.material-icons {
+    vertical-align: middle;
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+.material-icons.inline {
+    font-size: 18px;
+    margin-right: 4px;
+    margin-left: -2px;
+}
+
+.objective-card h3 .material-icons,
+.objective-card h4 .material-icons {
+    font-size: 20px;
+    margin-right: 8px;
+}
+
 /* Project Hero Section */
 .project-hero {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
