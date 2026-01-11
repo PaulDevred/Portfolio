@@ -187,10 +187,6 @@
     background-color: #e8eef7;
 }
 
-.experience-level:nth-child(3) h4::before {
-    content: '📌 ';
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .timeline::before {
