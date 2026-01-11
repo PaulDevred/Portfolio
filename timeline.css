@@ -75,16 +75,8 @@
     font-size: 28px;
 }
 
-.timeline-item:nth-child(3) .timeline-marker {
-    border-color: #2ecc71;
-}
-
-.timeline-item:nth-child(3) .timeline-marker {
-    border-color: #e74c3c;
-}
-
-.timeline-item:nth-child(4) .timeline-marker {
-    border-color: #f39c12;
+.timeline-item .timeline-marker {
+    border-color: var(--secondary-color);
 }
 
 /* Timeline Content */
