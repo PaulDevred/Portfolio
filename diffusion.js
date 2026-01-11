@@ -1,4 +1,4 @@
-// Simulation de réaction-diffusion (Gray-Scott)
+// Simulation de réaction-diffusion (Gray-Scott) - Optimisée
 class DiffusionSimulation {
     constructor(canvas) {
         this.canvas = canvas;
@@ -7,40 +7,37 @@ class DiffusionSimulation {
         this.height = canvas.height = window.innerHeight;
         
         // Paramètres de la réaction-diffusion
-        this.dA = 1.0; // Diffusion rate for A
-        this.dB = 0.5; // Diffusion rate for B
-        
-        // Vitesse globale de la simulation (1 = normal, 2 = 2x plus rapide, 0.5 = 2x plus lent)
-        this.speed = 1;
+        this.dA = 1.0;
+        this.dB = 0.5;
         
         // Paramètres de base et amplitude de variation
         this.baseFeed = 0.029;
         this.baseKill = 0.057;
-        this.feedAmplitude = 0.003; // Variation légère pour ne pas casser les motifs
+        this.feedAmplitude = 0.003;
         this.killAmplitude = 0.002;
-        
-        // Vitesses de variation différentes pour créer des motifs organiques
         this.feedSpeed = 0.0008;
         this.killSpeed = 0.0011;
-        
         this.time = 0;
         
-        // Grilles
+        // Grilles - utiliser une résolution plus basse pour plus de performance
         this.resolution = 4;
         this.gridW = Math.floor(this.width / this.resolution);
         this.gridH = Math.floor(this.height / this.resolution);
         
-        this.A = this.createGrid(1);
-        this.B = this.createGrid(0);
-        this.nextA = this.createGrid(1);
-        this.nextB = this.createGrid(0);
+        // Utiliser des typed arrays pour de meilleures performances
+        const size = this.gridW * this.gridH;
+        this.A = new Float32Array(size).fill(1);
+        this.B = new Float32Array(size).fill(0);
+        this.nextA = new Float32Array(size).fill(1);
+        this.nextB = new Float32Array(size).fill(0);
         
-        // Initialisation avec quelques spots
         this.initializeWithSpots();
         
-        // Variables de couleur
         this.imageData = this.ctx.createImageData(this.width, this.height);
         this.data = this.imageData.data;
+        
+        // Pré-calculer la table de couleurs pour éviter les calculs HSL répétés
+        this.colorTable = this.generateColorTable();
         
         this.animate = this.animate.bind(this);
         window.addEventListener('resize', () => this.handleResize());
@@ -49,18 +46,33 @@ class DiffusionSimulation {
         this.isMouseDown = false;
         this.mouseX = 0;
         this.mouseY = 0;
-        this.brushSize = 5; // Taille du pinceau en cellules
-        this.brushIntensity = 1.0; // Intensité du pinceau
+        this.brushSize = 5;
+        this.brushIntensity = 1.0;
         
         this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
         this.canvas.addEventListener('mouseup', () => this.onMouseUp());
         this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
         this.canvas.addEventListener('mouseleave', () => this.onMouseUp());
         
-        // Support tactile
         this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
         this.canvas.addEventListener('touchend', () => this.onMouseUp());
         this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
+    }
+    
+    generateColorTable() {
+        // Pré-calculer 256 couleurs pour éviter les calculs en temps réel
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = i / 255;
+            // Gradient bleu-violet simplifié
+            const r = Math.round(30 + t * 100);
+            const g = Math.round(20 + t * 50);
+            const b = Math.round(80 + t * 175);
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
     }
     
     onMouseDown(e) {
@@ -109,280 +121,145 @@ class DiffusionSimulation {
     }
     
     paintAtMouse() {
-        // Dessiner un cercle de B à la position de la souris
-        for (let dy = -this.brushSize; dy <= this.brushSize; dy++) {
-            for (let dx = -this.brushSize; dx <= this.brushSize; dx++) {
+        const brushSize = this.brushSize;
+        const gridW = this.gridW;
+        const gridH = this.gridH;
+        const mx = this.mouseX;
+        const my = this.mouseY;
+        const B = this.B;
+        
+        for (let dy = -brushSize; dy <= brushSize; dy++) {
+            for (let dx = -brushSize; dx <= brushSize; dx++) {
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist <= this.brushSize) {
-                    const x = this.mouseX + dx;
-                    const y = this.mouseY + dy;
-                    if (x >= 0 && x < this.gridW && y >= 0 && y < this.gridH) {
-                        const idx = y * this.gridW + x;
-                        // Intensité décroissante vers les bords
-                        const falloff = 1 - (dist / this.brushSize);
-                        this.B[idx] = Math.min(1, this.B[idx] + this.brushIntensity * falloff);
+                if (dist <= brushSize) {
+                    const x = mx + dx;
+                    const y = my + dy;
+                    if (x >= 0 && x < gridW && y >= 0 && y < gridH) {
+                        const idx = y * gridW + x;
+                        const falloff = 1 - (dist / brushSize);
+                        B[idx] = Math.min(1, B[idx] + this.brushIntensity * falloff);
                     }
                 }
             }
         }
     }
     
-    createGrid(value) {
-        return Array(this.gridW * this.gridH).fill(value);
-    }
-    
     initializeWithSpots() {
-        // Ajouter des spots plus nombreux et plus intenses de B
+        const gridW = this.gridW;
+        const gridH = this.gridH;
+        const B = this.B;
         for (let i = 0; i < 200; i++) {
-            const x = Math.floor(Math.random() * this.gridW);
-            const y = Math.floor(Math.random() * this.gridH);
-            const idx = y * this.gridW + x;
-            this.B[idx] = 0.8 + Math.random() * 0.2;
+            const x = Math.floor(Math.random() * gridW);
+            const y = Math.floor(Math.random() * gridH);
+            B[y * gridW + x] = 0.8 + Math.random() * 0.2;
         }
-        
-    //     // Ajouter quelques structures initiales
-    //     this.spawnStructures(5);
-    // }
-    
-    // // Dessiner un pixel sur la grille B
-    // setB(x, y, value) {
-    //     x = (x + this.gridW) % this.gridW;
-    //     y = (y + this.gridH) % this.gridH;
-    //     const idx = y * this.gridW + x;
-    //     this.B[idx] = Math.max(this.B[idx], value);
-    // }
-    
-    // // Créer un "soliton" - structure mobile dans Gray-Scott
-    // createSoliton(cx, cy, direction) {
-    //     // Un soliton est une structure asymétrique qui se déplace
-    //     const size = 3;
-    //     const intensity = 1.0;
-        
-    //     // Créer une forme asymétrique qui génère du mouvement
-    //     for (let dy = -size; dy <= size; dy++) {
-    //         for (let dx = -size; dx <= size; dx++) {
-    //             const dist = Math.sqrt(dx * dx + dy * dy);
-    //             if (dist <= size) {
-    //                 // Asymétrie selon la direction pour créer le mouvement
-    //                 let bias = 0;
-    //                 switch(direction) {
-    //                     case 0: bias = dx * 0.15; break; // droite
-    //                     case 1: bias = -dx * 0.15; break; // gauche
-    //                     case 2: bias = dy * 0.15; break; // bas
-    //                     case 3: bias = -dy * 0.15; break; // haut
-    //                 }
-    //                 const value = intensity * (1 - dist / size) + bias;
-    //                 if (value > 0) this.setB(cx + dx, cy + dy, value);
-    //             }
-    //         }
-    //     }
-    // }
-    
-    // // Créer un anneau oscillant
-    // createRing(cx, cy, radius) {
-    //     for (let angle = 0; angle < Math.PI * 2; angle += 0.2) {
-    //         const x = Math.round(cx + Math.cos(angle) * radius);
-    //         const y = Math.round(cy + Math.sin(angle) * radius);
-    //         this.setB(x, y, 0.9);
-    //         this.setB(x + 1, y, 0.7);
-    //         this.setB(x, y + 1, 0.7);
-    //     }
-    // }
-    
-    // // Créer une spirale
-    // createSpiral(cx, cy, turns) {
-    //     for (let t = 0; t < turns * Math.PI * 2; t += 0.15) {
-    //         const radius = t * 0.8;
-    //         const x = Math.round(cx + Math.cos(t) * radius);
-    //         const y = Math.round(cy + Math.sin(t) * radius);
-    //         this.setB(x, y, 0.95);
-    //     }
-    // }
-    
-    // // Créer une ligne de "gliders"
-    // createGliderWave(startX, startY, count, direction) {
-    //     for (let i = 0; i < count; i++) {
-    //         const spacing = 8;
-    //         let x = startX, y = startY;
-    //         switch(direction) {
-    //             case 0: x += i * spacing; break;
-    //             case 1: x -= i * spacing; break;
-    //             case 2: y += i * spacing; break;
-    //             case 3: y -= i * spacing; break;
-    //         }
-    //         this.createSoliton(x, y, direction);
-    //     }
-    // }
-    
-    // // Créer un pulsar (oscillateur)
-    // createPulsar(cx, cy) {
-    //     const pattern = [
-    //         [0, 1], [0, -1], [1, 0], [-1, 0],
-    //         [2, 2], [2, -2], [-2, 2], [-2, -2],
-    //         [3, 0], [-3, 0], [0, 3], [0, -3]
-    //     ];
-    //     for (const [dx, dy] of pattern) {
-    //         this.setB(cx + dx, cy + dy, 1.0);
-    //     }
-    // }
-    
-    // // Créer un "vaisseau" plus complexe
-    // createShip(cx, cy, direction) {
-    //     // Forme de vaisseau asymétrique
-    //     const pattern = [
-    //         [0, 0, 1.0], [1, 0, 0.9], [2, 0, 0.8], [-1, 0, 0.7],
-    //         [0, 1, 0.9], [1, 1, 0.8], [0, -1, 0.9], [1, -1, 0.8],
-    //         [3, 0, 0.6], [3, 1, 0.5], [3, -1, 0.5]
-    //     ];
-        
-    //     for (const [dx, dy, val] of pattern) {
-    //         let rx = dx, ry = dy;
-    //         // Rotation selon direction
-    //         switch(direction) {
-    //             case 1: rx = -dx; break;
-    //             case 2: rx = dy; ry = dx; break;
-    //             case 3: rx = -dy; ry = -dx; break;
-    //         }
-    //         this.setB(cx + rx, cy + ry, val);
-    //     }
-    // }
-    
-    // // Générer des structures aléatoires
-    // spawnStructures(count) {
-    //     for (let i = 0; i < count; i++) {
-    //         const x = Math.floor(Math.random() * this.gridW);
-    //         const y = Math.floor(Math.random() * this.gridH);
-    //         const type = Math.floor(Math.random() * 6);
-    //         const dir = Math.floor(Math.random() * 4);
-            
-    //         switch(type) {
-    //             case 0:
-    //                 this.createSoliton(x, y, dir);
-    //                 break;
-    //             case 1:
-    //                 this.createRing(x, y, 5 + Math.random() * 5);
-    //                 break;
-    //             case 2:
-    //                 this.createSpiral(x, y, 2 + Math.random() * 2);
-    //                 break;
-    //             case 3:
-    //                 this.createGliderWave(x, y, 3 + Math.floor(Math.random() * 3), dir);
-    //                 break;
-    //             case 4:
-    //                 this.createPulsar(x, y);
-    //                 break;
-    //             case 5:
-    //                 this.createShip(x, y, dir);
-    //                 break;
-    //         }
-    //     }
-    }
-    
-    index(x, y) {
-        x = (x + this.gridW) % this.gridW;
-        y = (y + this.gridH) % this.gridH;
-        return y * this.gridW + x;
-    }
-    
-    laplacian(grid, x, y) {
-        let sum = 0;
-        sum += grid[this.index(x, y)] * -1;
-        sum += grid[this.index(x + 1, y)] * 0.2;
-        sum += grid[this.index(x - 1, y)] * 0.2;
-        sum += grid[this.index(x, y + 1)] * 0.2;
-        sum += grid[this.index(x, y - 1)] * 0.2;
-        sum += grid[this.index(x + 1, y + 1)] * 0.05;
-        sum += grid[this.index(x - 1, y - 1)] * 0.05;
-        sum += grid[this.index(x + 1, y - 1)] * 0.05;
-        sum += grid[this.index(x - 1, y + 1)] * 0.05;
-        return sum;
     }
     
     update() {
-        // Variation continue des paramètres avec des oscillations déphasées
-        this.time += this.speed;
+        this.time++;
         const feed = this.baseFeed + Math.sin(this.time * this.feedSpeed) * this.feedAmplitude;
         const kill = this.baseKill + Math.sin(this.time * this.killSpeed + 1.5) * this.killAmplitude;
+        const killPlusFeed = kill + feed;
         
-        // // Spawn périodique de nouvelles structures (toutes les ~500 frames)
-        // if (Math.floor(this.time) % 500 === 0 && Math.floor(this.time - this.speed) % 500 !== 0) {
-        //     this.spawnStructures(1 + Math.floor(Math.random() * 2));
-        // }
+        const gridW = this.gridW;
+        const gridH = this.gridH;
+        const A = this.A;
+        const B = this.B;
+        const nextA = this.nextA;
+        const nextB = this.nextB;
+        const dA = this.dA;
+        const dB = this.dB;
         
-        // Nombre d'itérations par frame basé sur la vitesse
-        const iterations = Math.max(1, Math.round(this.speed));
-        
-        for (let iter = 0; iter < iterations; iter++) {
-            for (let y = 0; y < this.gridH; y++) {
-                for (let x = 0; x < this.gridW; x++) {
-                    const idx = y * this.gridW + x;
-                    const a = this.A[idx];
-                    const b = this.B[idx];
-                    
-                    const lapA = this.laplacian(this.A, x, y);
-                    const lapB = this.laplacian(this.B, x, y);
-                    
-                    // Gray-Scott reaction-diffusion equations avec paramètres variables
-                    let nextA = a + (this.dA * lapA) - a * b * b + feed * (1 - a);
-                    let nextB = b + (this.dB * lapB) + a * b * b - (kill + feed) * b;
-                    
-                    nextA = Math.max(0, Math.min(1, nextA));
-                    nextB = Math.max(0, Math.min(1, nextB));
-                    
-                    this.nextA[idx] = nextA;
-                    this.nextB[idx] = nextB;
-                }
-            }
+        for (let y = 0; y < gridH; y++) {
+            const yUp = ((y - 1 + gridH) % gridH) * gridW;
+            const yDown = ((y + 1) % gridH) * gridW;
+            const yRow = y * gridW;
             
-            // Swap grids
-            [this.A, this.nextA] = [this.nextA, this.A];
-            [this.B, this.nextB] = [this.nextB, this.B];
+            for (let x = 0; x < gridW; x++) {
+                const xLeft = (x - 1 + gridW) % gridW;
+                const xRight = (x + 1) % gridW;
+                const idx = yRow + x;
+                
+                const a = A[idx];
+                const b = B[idx];
+                
+                // Laplacian inliné pour éviter les appels de fonction
+                const lapA = A[yRow + xRight] * 0.2 + A[yRow + xLeft] * 0.2 +
+                             A[yDown + x] * 0.2 + A[yUp + x] * 0.2 +
+                             A[yDown + xRight] * 0.05 + A[yUp + xLeft] * 0.05 +
+                             A[yDown + xLeft] * 0.05 + A[yUp + xRight] * 0.05 - a;
+                
+                const lapB = B[yRow + xRight] * 0.2 + B[yRow + xLeft] * 0.2 +
+                             B[yDown + x] * 0.2 + B[yUp + x] * 0.2 +
+                             B[yDown + xRight] * 0.05 + B[yUp + xLeft] * 0.05 +
+                             B[yDown + xLeft] * 0.05 + B[yUp + xRight] * 0.05 - b;
+                
+                const abb = a * b * b;
+                let na = a + dA * lapA - abb + feed * (1 - a);
+                let nb = b + dB * lapB + abb - killPlusFeed * b;
+                
+                // Clamp sans Math.max/min pour plus de performance
+                nextA[idx] = na < 0 ? 0 : (na > 1 ? 1 : na);
+                nextB[idx] = nb < 0 ? 0 : (nb > 1 ? 1 : nb);
+            }
         }
+        
+        // Swap grids
+        const tempA = this.A;
+        const tempB = this.B;
+        this.A = this.nextA;
+        this.B = this.nextB;
+        this.nextA = tempA;
+        this.nextB = tempB;
     }
     
     render() {
-        for (let y = 0; y < this.gridH; y++) {
-            for (let x = 0; x < this.gridW; x++) {
-                const idx = y * this.gridW + x;
-                const a = this.A[idx];
-                const b = this.B[idx];
+        const gridW = this.gridW;
+        const gridH = this.gridH;
+        const resolution = this.resolution;
+        const width = this.width;
+        const height = this.height;
+        const A = this.A;
+        const B = this.B;
+        const data = this.data;
+        const colorTable = this.colorTable;
+        
+        for (let y = 0; y < gridH; y++) {
+            const yRow = y * gridW;
+            const pyBase = y * resolution;
+            
+            for (let x = 0; x < gridW; x++) {
+                const idx = yRow + x;
+                const b = B[idx];
                 
-                // Créer une couleur basée sur A et B
-                const hue = (b * 360) % 160;
-                const sat = 2000;
-                const light = 1 + (a - b) * 20;
+                // Utiliser la table de couleurs pré-calculée
+                const colorIdx = Math.floor(b * 255) * 3;
+                const r = colorTable[colorIdx];
+                const g = colorTable[colorIdx + 1];
+                const bl = colorTable[colorIdx + 2];
                 
-                // Convertir HSL en RGB
-                const c = this.hslToRgb(hue, sat, light);
+                const pxBase = x * resolution;
                 
                 // Remplir le carré de résolution
-                for (let py = 0; py < this.resolution && y * this.resolution + py < this.height; py++) {
-                    for (let px = 0; px < this.resolution && x * this.resolution + px < this.width; px++) {
-                        const pixelIdx = ((y * this.resolution + py) * this.width + (x * this.resolution + px)) * 4;
-                        this.data[pixelIdx] = c.r;
-                        this.data[pixelIdx + 1] = c.g;
-                        this.data[pixelIdx + 2] = c.b;
-                        this.data[pixelIdx + 3] = 255;
+                for (let py = 0; py < resolution; py++) {
+                    const rowY = pyBase + py;
+                    if (rowY >= height) break;
+                    const rowOffset = rowY * width;
+                    
+                    for (let px = 0; px < resolution; px++) {
+                        const colX = pxBase + px;
+                        if (colX >= width) break;
+                        const pixelIdx = (rowOffset + colX) * 4;
+                        data[pixelIdx] = r;
+                        data[pixelIdx + 1] = g;
+                        data[pixelIdx + 2] = bl;
+                        data[pixelIdx + 3] = 255;
                     }
                 }
             }
         }
         
         this.ctx.putImageData(this.imageData, 0, 0);
-    }
-    
-    hslToRgb(h, s, l) {
-        s /= 100;
-        l /= 100;
-        const k = n => (n + h / 30) % 12;
-        const a = s * Math.min(l, 1 - l);
-        const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-        
-        return {
-            r: Math.round(255 * f(0)),
-            g: Math.round(255 * f(8)),
-            b: Math.round(255 * f(4))
-        };
     }
     
     animate() {
@@ -397,10 +274,11 @@ class DiffusionSimulation {
         this.gridW = Math.floor(this.width / this.resolution);
         this.gridH = Math.floor(this.height / this.resolution);
         
-        this.A = this.createGrid(1);
-        this.B = this.createGrid(0);
-        this.nextA = this.createGrid(1);
-        this.nextB = this.createGrid(0);
+        const size = this.gridW * this.gridH;
+        this.A = new Float32Array(size).fill(1);
+        this.B = new Float32Array(size).fill(0);
+        this.nextA = new Float32Array(size).fill(1);
+        this.nextB = new Float32Array(size).fill(0);
         this.initializeWithSpots();
         
         this.imageData = this.ctx.createImageData(this.width, this.height);
