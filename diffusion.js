@@ -44,6 +44,87 @@ class DiffusionSimulation {
         
         this.animate = this.animate.bind(this);
         window.addEventListener('resize', () => this.handleResize());
+        
+        // Interaction souris
+        this.isMouseDown = false;
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.brushSize = 5; // Taille du pinceau en cellules
+        this.brushIntensity = 1.0; // Intensité du pinceau
+        
+        this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
+        this.canvas.addEventListener('mouseup', () => this.onMouseUp());
+        this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        this.canvas.addEventListener('mouseleave', () => this.onMouseUp());
+        
+        // Support tactile
+        this.canvas.addEventListener('touchstart', (e) => this.onTouchStart(e));
+        this.canvas.addEventListener('touchend', () => this.onMouseUp());
+        this.canvas.addEventListener('touchmove', (e) => this.onTouchMove(e));
+    }
+    
+    onMouseDown(e) {
+        this.isMouseDown = true;
+        this.updateMousePosition(e);
+        this.paintAtMouse();
+    }
+    
+    onMouseUp() {
+        this.isMouseDown = false;
+    }
+    
+    onMouseMove(e) {
+        this.updateMousePosition(e);
+        if (this.isMouseDown) {
+            this.paintAtMouse();
+        }
+    }
+    
+    onTouchStart(e) {
+        e.preventDefault();
+        this.isMouseDown = true;
+        const touch = e.touches[0];
+        this.updateMousePosition(touch);
+        this.paintAtMouse();
+    }
+    
+    onTouchMove(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        this.updateMousePosition(touch);
+        if (this.isMouseDown) {
+            this.paintAtMouse();
+        }
+    }
+    
+    updateMousePosition(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        // Prendre en compte le ratio entre taille CSS et taille du canvas
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const canvasX = (e.clientX - rect.left) * scaleX;
+        const canvasY = (e.clientY - rect.top) * scaleY;
+        this.mouseX = Math.floor(canvasX / this.resolution);
+        this.mouseY = Math.floor(canvasY / this.resolution);
+    }
+    
+    paintAtMouse() {
+        // Dessiner un cercle de B à la position de la souris
+        for (let dy = -this.brushSize; dy <= this.brushSize; dy++) {
+            for (let dx = -this.brushSize; dx <= this.brushSize; dx++) {
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist <= this.brushSize) {
+                    const x = this.mouseX + dx;
+                    const y = this.mouseY + dy;
+                    if (x >= 0 && x < this.gridW && y >= 0 && y < this.gridH) {
+                        const idx = y * this.gridW + x;
+                        // Intensité décroissante vers les bords
+                        const falloff = 1 - (dist / this.brushSize);
+                        this.B[idx] = Math.min(1, this.B[idx] + this.brushIntensity * falloff);
+                    }
+                }
+            }
+        }
     }
     
     createGrid(value) {
@@ -58,6 +139,143 @@ class DiffusionSimulation {
             const idx = y * this.gridW + x;
             this.B[idx] = 0.8 + Math.random() * 0.2;
         }
+        
+    //     // Ajouter quelques structures initiales
+    //     this.spawnStructures(5);
+    // }
+    
+    // // Dessiner un pixel sur la grille B
+    // setB(x, y, value) {
+    //     x = (x + this.gridW) % this.gridW;
+    //     y = (y + this.gridH) % this.gridH;
+    //     const idx = y * this.gridW + x;
+    //     this.B[idx] = Math.max(this.B[idx], value);
+    // }
+    
+    // // Créer un "soliton" - structure mobile dans Gray-Scott
+    // createSoliton(cx, cy, direction) {
+    //     // Un soliton est une structure asymétrique qui se déplace
+    //     const size = 3;
+    //     const intensity = 1.0;
+        
+    //     // Créer une forme asymétrique qui génère du mouvement
+    //     for (let dy = -size; dy <= size; dy++) {
+    //         for (let dx = -size; dx <= size; dx++) {
+    //             const dist = Math.sqrt(dx * dx + dy * dy);
+    //             if (dist <= size) {
+    //                 // Asymétrie selon la direction pour créer le mouvement
+    //                 let bias = 0;
+    //                 switch(direction) {
+    //                     case 0: bias = dx * 0.15; break; // droite
+    //                     case 1: bias = -dx * 0.15; break; // gauche
+    //                     case 2: bias = dy * 0.15; break; // bas
+    //                     case 3: bias = -dy * 0.15; break; // haut
+    //                 }
+    //                 const value = intensity * (1 - dist / size) + bias;
+    //                 if (value > 0) this.setB(cx + dx, cy + dy, value);
+    //             }
+    //         }
+    //     }
+    // }
+    
+    // // Créer un anneau oscillant
+    // createRing(cx, cy, radius) {
+    //     for (let angle = 0; angle < Math.PI * 2; angle += 0.2) {
+    //         const x = Math.round(cx + Math.cos(angle) * radius);
+    //         const y = Math.round(cy + Math.sin(angle) * radius);
+    //         this.setB(x, y, 0.9);
+    //         this.setB(x + 1, y, 0.7);
+    //         this.setB(x, y + 1, 0.7);
+    //     }
+    // }
+    
+    // // Créer une spirale
+    // createSpiral(cx, cy, turns) {
+    //     for (let t = 0; t < turns * Math.PI * 2; t += 0.15) {
+    //         const radius = t * 0.8;
+    //         const x = Math.round(cx + Math.cos(t) * radius);
+    //         const y = Math.round(cy + Math.sin(t) * radius);
+    //         this.setB(x, y, 0.95);
+    //     }
+    // }
+    
+    // // Créer une ligne de "gliders"
+    // createGliderWave(startX, startY, count, direction) {
+    //     for (let i = 0; i < count; i++) {
+    //         const spacing = 8;
+    //         let x = startX, y = startY;
+    //         switch(direction) {
+    //             case 0: x += i * spacing; break;
+    //             case 1: x -= i * spacing; break;
+    //             case 2: y += i * spacing; break;
+    //             case 3: y -= i * spacing; break;
+    //         }
+    //         this.createSoliton(x, y, direction);
+    //     }
+    // }
+    
+    // // Créer un pulsar (oscillateur)
+    // createPulsar(cx, cy) {
+    //     const pattern = [
+    //         [0, 1], [0, -1], [1, 0], [-1, 0],
+    //         [2, 2], [2, -2], [-2, 2], [-2, -2],
+    //         [3, 0], [-3, 0], [0, 3], [0, -3]
+    //     ];
+    //     for (const [dx, dy] of pattern) {
+    //         this.setB(cx + dx, cy + dy, 1.0);
+    //     }
+    // }
+    
+    // // Créer un "vaisseau" plus complexe
+    // createShip(cx, cy, direction) {
+    //     // Forme de vaisseau asymétrique
+    //     const pattern = [
+    //         [0, 0, 1.0], [1, 0, 0.9], [2, 0, 0.8], [-1, 0, 0.7],
+    //         [0, 1, 0.9], [1, 1, 0.8], [0, -1, 0.9], [1, -1, 0.8],
+    //         [3, 0, 0.6], [3, 1, 0.5], [3, -1, 0.5]
+    //     ];
+        
+    //     for (const [dx, dy, val] of pattern) {
+    //         let rx = dx, ry = dy;
+    //         // Rotation selon direction
+    //         switch(direction) {
+    //             case 1: rx = -dx; break;
+    //             case 2: rx = dy; ry = dx; break;
+    //             case 3: rx = -dy; ry = -dx; break;
+    //         }
+    //         this.setB(cx + rx, cy + ry, val);
+    //     }
+    // }
+    
+    // // Générer des structures aléatoires
+    // spawnStructures(count) {
+    //     for (let i = 0; i < count; i++) {
+    //         const x = Math.floor(Math.random() * this.gridW);
+    //         const y = Math.floor(Math.random() * this.gridH);
+    //         const type = Math.floor(Math.random() * 6);
+    //         const dir = Math.floor(Math.random() * 4);
+            
+    //         switch(type) {
+    //             case 0:
+    //                 this.createSoliton(x, y, dir);
+    //                 break;
+    //             case 1:
+    //                 this.createRing(x, y, 5 + Math.random() * 5);
+    //                 break;
+    //             case 2:
+    //                 this.createSpiral(x, y, 2 + Math.random() * 2);
+    //                 break;
+    //             case 3:
+    //                 this.createGliderWave(x, y, 3 + Math.floor(Math.random() * 3), dir);
+    //                 break;
+    //             case 4:
+    //                 this.createPulsar(x, y);
+    //                 break;
+    //             case 5:
+    //                 this.createShip(x, y, dir);
+    //                 break;
+    //         }
+    //     }
     }
     
     index(x, y) {
@@ -85,6 +303,11 @@ class DiffusionSimulation {
         this.time += this.speed;
         const feed = this.baseFeed + Math.sin(this.time * this.feedSpeed) * this.feedAmplitude;
         const kill = this.baseKill + Math.sin(this.time * this.killSpeed + 1.5) * this.killAmplitude;
+        
+        // // Spawn périodique de nouvelles structures (toutes les ~500 frames)
+        // if (Math.floor(this.time) % 500 === 0 && Math.floor(this.time - this.speed) % 500 !== 0) {
+        //     this.spawnStructures(1 + Math.floor(Math.random() * 2));
+        // }
         
         // Nombre d'itérations par frame basé sur la vitesse
         const iterations = Math.max(1, Math.round(this.speed));
