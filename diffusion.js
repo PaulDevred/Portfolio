@@ -9,8 +9,10 @@ class DiffusionSimulation {
         // Paramètres de la réaction-diffusion
         this.dA = 1.0; // Diffusion rate for A
         this.dB = 0.5; // Diffusion rate for B
-        this.feed = 0.035;
-        this.kill = 0.055;
+        this.feed = 0.029;
+        this.kill = 0.057;
+        
+        this.frameCount = 0;
         
         // Grilles
         this.resolution = 4;
@@ -88,6 +90,17 @@ class DiffusionSimulation {
                 this.nextB[idx] = nextB;
             }
         }
+        
+        // // Ajouter une perturbation aléatoire tous les 50 frames pour maintenir le mouvement
+        // this.frameCount++;
+        // if (this.frameCount % 50 === 0) {
+        //     for (let i = 0; i < 30; i++) {
+        //         const x = Math.floor(Math.random() * this.gridW);
+        //         const y = Math.floor(Math.random() * this.gridH);
+        //         const idx = y * this.gridW + x;
+        //         this.nextB[idx] = Math.max(this.nextB[idx], 0.5 + Math.random() * 0.3);
+        //     }
+        // }
         
         // Swap grids
         [this.A, this.nextA] = [this.nextA, this.A];
