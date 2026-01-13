@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot de Combat - Portfolio</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../projet.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">Mon Portfolio</div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#accueil">Accueil</a></li>
+                    <li><a href="../index.html#projets">Projets</a></li>
+                    <li><a href="../timeline.html">Mon Parcours</a></li>
+                    <li><a href="../index.html#competences">Compétences</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <a href="../index.html#projets" class="back-link">← Retour aux projets</a>
+            <h1>RatBot</h1>
+            <p class="project-subtitle">Quand l'électronique rencontre la mécanique</p>
+            <div class="project-meta">
+                <span class="meta-item"><span class="material-icons inline">calendar_today</span> 2 semaines</span>
+                <span class="meta-item"><span class="material-icons inline">person</span> 1 personne</span>
+                <span class="meta-item"><span class="material-icons inline">sports_kabaddi</span> Projet personnel - Combat 1vs1</span>
+            </div>
+            <div class="project-tags-hero">
+                <span class="tag">ESP32</span>
+                <span class="tag">C++</span>
+                <span class="tag">Électronique</span>
+                <span class="tag">Impression 3D</span>
+                <span class="tag">Bluetooth</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Content -->
+    <main class="project-content">
+        <div class="container">
+            
+            <!-- Introduction -->
+            <section class="content-section">
+                <h2>Deux semaines pour créer un robot de combat</h2>
+                <p>Ce projet est né d'un <strong>défi amical</strong> : construire un robot de combat en seulement <strong>deux semaines (en parallèle de mon alternance)</strong> pour un affrontement 1vs1.</p>
+                <p>Avec un budget limité à <strong>50€ d'achats</strong> (récupération illimitée), j'ai conçu et réalisé un robot piloté par une manette de PS4, propulsé par des <strong>moteurs d'hoverboard récupérés</strong> et équipé d'une queue en chaine en guise d'arme.</p>
+                <p>Ce projet m'a permis de mettre en pratique mes compétences en <strong>électronique</strong>, <strong>programmation embarquée</strong> et <strong>fabrication mécanique</strong> dans un contexte de contraintes fortes.</p>
+            </section>
+
+            <!-- Objectifs -->
+            <section class="content-section">
+                <h2>De l'hoverboard au Robot : Objectifs et Contraintes</h2>
+                <h3>Contraintes du défi</h3>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3><span class="material-icons">timer</span> Temps limité</h3>
+                        <p>Seulement 2 semaines pour concevoir, construire et programmer le robot de A à Z, à côté de mon alternance.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">euro</span> Budget serré</h3>
+                        <p>Maximum 50€ d'achats, mais récupération de matériel illimitée.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">sports_esports</span> Pilotage manuel</h3>
+                        <p>Le robot doit être contrôlé par le participant, pas de mode autonome.</p>
+                    </div>
+                </div>
+
+                <h3>Objectifs techniques</h3>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h4><span class="material-icons">settings_input_component</span> Contrôle des moteurs d'hoverboard</h4>
+                        <p>Réutiliser les moteurs triphasés et batteries d'hoverboards pour la propulsion.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h4><span class="material-icons">memory</span> Reprogrammation du firmware</h4>
+                        <p>Reprogrammer la carte mère de l'hoverboard pour contrôler les moteurs via le protocole UART.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h4><span class="material-icons">bluetooth</span> Contrôle sans fil</h4>
+                        <p>Implémenter une connexion Bluetooth avec une manette PS4 pour le pilotage.</p>
+                    </div>
+                </div>
+
+                <h3>Risques identifiés</h3>
+                <div class="objectives-grid">
+                    <div class="objective-card risk-card">
+                        <h4><span class="material-icons">warning</span> Batteries Li-ion</h4>
+                        <p>Manipulation de batteries endommagées.</p>
+                    </div>
+                    <div class="objective-card risk-card">
+                        <h4><span class="material-icons">warning</span> Court-circuiter la carte mère</h4>
+                        <p>Risque de court-circuit lors des manipulations, soudures, et câblage des moteurs et batteries.</p>
+                    </div>
+                    <div class="objective-card risk-card">
+                        <h4><span class="material-icons">warning</span> Panne en combat</h4>
+                        <p>Si la connexion entre le robot et la manette est coupée, le combat est perdu.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mon rôle -->
+            <section class="content-section highlight-section">
+                <h2>De la Récupération à l'Arène</h2>
+                
+                <h3>Récupération et diagnostic matériel</h3>
+                <p>J'ai acheté deux <strong>hoverboards hors service</strong> pour 10€ et 15€ pour en extraire batterie, carte mère et moteurs :</p>
+                <ul>
+                    <li>Diagnostic des batteries au multimètre (mesure de tension cellule par cellule)</li>
+                    <li>Identification d'une batterie fortement déchargée (~1V) et récupération de l'autre</li>
+                    <li>Test du BMS (Battery Management System)</li>
+                    <li>Récupération des moteurs triphasés brushless avec capteurs Hall</li>
+                </ul>
+
+                <h3>Hack de la carte mère de l'hoverboard</h3>
+                <p>J'ai supprimé le firmware d'origine, présent sur la carte mère de l'hoverboard pour y injecter un <strong>firmware open-source</strong> afin d'en prendre le contrôle total :</p>
+                
+                <div class="neural-io">
+                    <div class="io-column">
+                        <h4>Étapes du hack</h4>
+                        <ul>
+                            <li>Soudure de pins sur la carte mère pour la connecter à mon PC.</li>
+                            <li>Connexion du ST-Link pour programmation</li>
+                            <li>Contournement des sécurités avec STM32 ST-LINK Utility</li>
+                            <li>Supression du firmware d'origine</li>
+                            <li>Flash du firmware open-source avec STM32 Cube Programmer</li>
+                            <li>Configuration du firware pour recevoir des données UART.</li>
+                        </ul>
+                    </div>
+                    <div class="io-column">
+                        <h4>Outils utilisés</h4>
+                        <ul>
+                            <li>Multimètre</li>
+                            <li>Poste à souder</li>
+                            <li>ST-Link V2 comme programmateur de puces</li>
+                            <li>STM32 ST-LINK Utility</li>
+                            <li>STM32 Cube Programmer</li>
+                            <li>PlatformIO pour la compilation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Programmation de l'ESP32</h3>
+                <p>L'ESP32 est une carte à microcontrôleur type arduino. Elle sert de <strong>cerveau</strong> au robot, assurant la liaison entre la manette PS4 et la carte mère :</p>
+                <ul>
+                    <li>Intégration de la bibliothèque <strong>Bluepad32.h</strong> pour la connexion Bluetooth</li>
+                    <li>Pairing via adresse MAC avec la manette</li>
+                    <li>Communication UART avec la carte mère</li>
+                </ul>
+
+                <h3>Mapping des contrôles</h3>
+                <div class="neural-io">
+                    <div class="io-column">
+                        <h4>Entrées manette</h4>
+                        <ul>
+                            <li><strong>Gâchette R2</strong> : avancer</li>
+                            <li><strong>Gâchette L2</strong> : reculer</li>
+                            <li><strong>Joystick gauche</strong> : rotation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Protocole de Communication UART</h3>
+                <p>Communication synchrone avec la carte mère via paquet structuré :</p>
+                <div class="neural-io">
+                    <div class="io-column">
+                        <h4>Trame d'envoi (8 bytes)</h4>
+                        <ul>
+                            <li><code>START_FRAME</code> : 0xABCD</li>
+                            <li><code>vitesse</code></li>
+                            <li><code>roatation</code></li>
+                            <li><code>checksum</code> : XOR de tous les champs</li>
+                        </ul>
+                    </div>
+                    <div class="io-column">
+                        <h4>Trame de réception (18 bytes)</h4>
+                        <ul>
+                            <li>Commandes d'écho (vitesse, rotation)</li>
+                            <li>Vitesses mesurées (moteurs droit/gauche)</li>
+                            <li>Tension batterie</li>
+                            <li>Température carte mère</li>
+                            <li>État des LEDs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Timing et Synchronisation</h3>
+                <ul>
+                    <li><strong>Lecture manette</strong> : toutes les 50ms via interval timer</li>
+                    <li><strong>Envoi moteurs</strong> : toutes les 50ms (~20 Hz)</li>
+                    <li><strong>Baud rate</strong> : 115200 baud (transfert rapide)</li>
+                    <li><strong>Réception continue</strong> : traitement en arrière-plan</li>
+                    <li>parallélisation de l'envoi/reception des données et de la gestion du bluetooth.</li>
+                </ul>
+
+                <h3>Conception mécanique</h3>
+                <p>J'ai conçu un châssis robuste adapté au combat :</p>
+                <ul>
+                    <li>Châssis rectangulaire avec 2 roues motrices à l'avant et roue arrière libre</li>
+                    <li>Impression 3D des supports en PTU (résistance aux chocs)</li>
+                    <li>Renforts en équerres métalliques et entretoises</li>
+                    <li>Carénage de protection en métal</li>
+                    <li>J'ai fais le choix d'une arme non motorisée pour mieux gérer mon temps et mettre en avant le pilotage:<br>
+                        Une queue en chaîne articulée avec une helice de mixeur industriel au bout.</li>
+                </ul>
+
+                <h3>Gestion de l'alimentation</h3>
+                <ul>
+                    <li>Batterie 36V pour la carte mère et les moteurs</li>
+                    <li>Alimentation 5V de l'ESP32 via soudure sur un transistor de la carte mère</li>
+                    <li>Monitoring de la tension batterie en temps réel</li>
+                    <li>Connecteur intégré pour recharge sans démontage</li>
+                </ul>
+            </section>
+
+            <!-- Résultats -->
+            <section class="content-section">
+                <h2>Prêt au Combat : Résultats</h2>
+                <div class="results-grid">
+                    <div class="result-item">
+                        <span class="result-number">15 km/h</span>
+                        <span class="result-label">Vitesse</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number">>5h</span>
+                        <span class="result-label">Autonomie</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number">&lt;50€</span>
+                        <span class="result-label">Budget respecté</span>
+                    </div>
+                </div>
+                
+                <h3>Fonctionnalités finales</h3>
+                <ul>
+                    <li>Contrôle précis via manette PS4 en Bluetooth</li>
+                    <li>Déplacements fluides</li>
+                    <li>Sécurité logicielle (arrêt automatique si perte de connexion)</li>
+                    <li>Paramètres FOC optimisés pour des accélérations progressives</li>
+                    <li>Télémétrie bidirectionnelle (vitesses, batterie, température)</li>
+                    <li>Robot robuste avec carénage de protection</li>
+                    <li>Indicateur de fonctionnement LED à bord</li>
+                </ul>
+            </section>
+
+            <!-- Évolutions futures -->
+            <section class="content-section">
+                <h2>Après le Combat : Évolutions Possibles</h2>
+                <div class="evolution-list">
+                    <div class="evolution-item">
+                        <h4><span class="material-icons">smart_toy</span> Mode autonome</h4>
+                        <p>Transformation en robot autonome avec capteur ultrason pour éviter les obstacles.</p>
+                    </div>
+                    <div class="evolution-item">
+                        <h4><span class="material-icons">dashboard</span> dashboard</h4>
+                        <p>développement d'un dashboard pour analyser l'historique des données de télémetrie.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ce que j'ai appris -->
+            <section class="content-section">
+                <h2>Un Projet Formateur : Ce que j'ai Appris</h2>
+                <blockquote>
+                    "Ce projet m'a prouvé qu'avec de la récupération, de la créativité et de la persévérance, on peut créer des machines complexes même avec un budget limité."
+                </blockquote>
+                <p>Ce défi m'a permis de développer des compétences variées : de la <strong>soudure</strong> et du <strong>diagnostic électronique</strong> à la <strong>programmation embarquée</strong> et à la <strong>fabrication mécanique</strong>.</p>
+                <p>J'ai appris à gérer les <strong>imprévus</strong> (batteries défectueuses, erreurs de flash, problèmes de communication) et à trouver des solutions rapidement sous contrainte de temps.</p>
+            </section>
+
+            <!-- Compétences -->
+            <section class="content-section">
+                <h2>Compétences mobilisées</h2>
+                <div class="skills-section">
+                    <div class="skill-category">
+                        <h4>Techniques</h4>
+                        <div class="skill-tags">
+                            <span class="tag">ESP32</span>
+                            <span class="tag">STM32</span>
+                            <span class="tag">C++ / Arduino</span>
+                            <span class="tag">UART</span>
+                            <span class="tag">Bluetooth</span>
+                            <span class="tag">PlatformIO</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Électronique</h4>
+                        <div class="skill-tags">
+                            <span class="tag">Soudure</span>
+                            <span class="tag">Diagnostic multimètre</span>
+                            <span class="tag">Moteurs brushless</span>
+                            <span class="tag">Batteries Li-ion</span>
+                            <span class="tag">FOC</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Fabrication</h4>
+                        <div class="skill-tags">
+                            <span class="tag">Impression 3D</span>
+                            <span class="tag">PETG</span>
+                            <span class="tag">Conception mécanique</span>
+                            <span class="tag">Récupération</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h4>Programmation embarquée</h4>
+                        <div class="skill-tags">
+                            <span class="tag">Arduino C++</span>
+                            <span class="tag">Bluepad32</span>
+                            <span class="tag">UART/HardwareSerial</span>
+                            <span class="tag">Gestion du timing</span>
+                            <span class="tag">Checksum XOR</span>
+                            <span class="tag">Protocoles binaires</span>
+                        </div>
+                    </div>
+                        <div class="skill-tags">
+                            <span class="tag">Gestion du temps</span>
+                            <span class="tag">Résolution de problèmes</span>
+                            <span class="tag">Débrouillardise</span>
+                            <span class="tag">Sécurité</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mon Portfolio. Tous droits réservés.</p>
+            <div class="social-links">
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="../diffusion.js"></script>
+</body>
+</html>
