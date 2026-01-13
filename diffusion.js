@@ -62,13 +62,34 @@ class DiffusionSimulation {
     
     generateColorTable() {
         // Pré-calculer 256 couleurs pour éviter les calculs en temps réel
+        // Gradient optimisé : plus de variations dans les valeurs basses (0-0.4)
+        // car la simulation génère principalement des valeurs dans cette plage
         const table = new Uint8Array(256 * 3);
         for (let i = 0; i < 256; i++) {
-            const t = i / 255;
-            // Gradient bleu-violet simplifié
-            const r = Math.round(30 + t * 100);
-            const g = Math.round(20 + t * 50);
-            const b = Math.round(80 + t * 175);
+            // Appliquer une courbe pour étirer les couleurs dans les valeurs basses
+            const t = Math.pow(i / 255, 0.6);
+            let r, g, b;
+            
+            if (t < 0.3) {
+                // Bleu profond à bleu-cyan (valeurs basses - mode passif)
+                const lt = t / 0.3;
+                r = Math.round(15 + lt * 35);
+                g = Math.round(25 + lt * 80);
+                b = Math.round(90 + lt * 100);
+            } else if (t < 0.6) {
+                // Bleu-cyan à violet (valeurs moyennes)
+                const lt = (t - 0.3) / 0.3;
+                r = Math.round(50 + lt * 100);
+                g = Math.round(105 - lt * 60);
+                b = Math.round(190 + lt * 50);
+            } else {
+                // Violet à magenta-rose (valeurs hautes - interaction souris)
+                const lt = (t - 0.6) / 0.4;
+                r = Math.round(150 + lt * 105);
+                g = Math.round(45 + lt * 80);
+                b = Math.round(240 - lt * 40);
+            }
+            
             table[i * 3] = r;
             table[i * 3 + 1] = g;
             table[i * 3 + 2] = b;
