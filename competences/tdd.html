@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Driven Development - Compétence | Portfolio</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../projet.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">Mon Portfolio</div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#accueil">Accueil</a></li>
+                    <li><a href="../index.html#projets">Projets</a></li>
+                    <li><a href="../timeline.html">Mon Parcours</a></li>
+                    <li><a href="../index.html#competences">Compétences</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Competence Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <a href="../index.html#competences" class="back-link">← Retour aux compétences</a>
+            <h1>Test Driven Development</h1>
+            <p class="project-subtitle">Coder avec la qualité comme point de départ</p>
+            <div class="project-tags-hero">
+                <span class="tag">TDD</span>
+                <span class="tag">Tests unitaires</span>
+                <span class="tag">xUnit</span>
+                <span class="tag">Qualité</span>
+                <span class="tag">Refactoring</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competence Content -->
+    <main class="project-content">
+        <div class="container">
+            
+            <!-- Ma définition -->
+            <section class="content-section">
+                <h2>Ma Vision du TDD</h2>
+                <p>Le <strong>Test Driven Development</strong> est une méthode de développement qui consiste à écrire les tests avant le code fonctionnel. Elle repose sur un cycle court et itératif : rédiger un test qui échoue, écrire le code pour le faire passer, puis améliorer la structure du code sans changer son comportement.</p>
+                
+                <p>Le TDD permet de garantir la <strong>fiabilité</strong> du code, de faciliter la <strong>maintenance</strong> en limitant les régressions et en rendant le refactoring plus sûr. C'est une pratique de plus en plus répandue dans les environnements où la qualité et la maintenabilité du code sont essentielles.</p>
+            </section>
+
+            <!-- Mes éléments de preuve -->
+            <section class="content-section highlight-section">
+                <h2>Comment j'ai appliqué le TDD</h2>
+
+                <h3>1. Application du TDD dans le domaine de l'IoT</h3>
+                <p>Durant mon alternance au sein d'<strong>IoThink-Solutions</strong>, j'ai introdui progressivement le TDD pour fiabiliser certains endpoints sensibles (comme ceux connectés aux API externes de <strong>GRDF</strong> et <strong>Actility</strong>).</p>
+                
+                <div class="neural-io">
+                    <div class="io-column">
+                        <h4>Pratiques mises en place</h4>
+                        <ul>
+                            <li>Tests unitaires avant chaque implémentation</li>
+                            <li>Tests d'intégration simulant différents scénarios</li>
+                            <li>Couverture des cas d'erreur (authentification, délais API)</li>
+                            <li>Détection de bugs dès la phase de développement</li>
+                            <li>Refactorings sécurisés par les tests</li>
+                        </ul>
+                    </div>
+                </div>
+                <p>Cette approche permet de détecter plusieurs bugs dès la phase de développement, évitant des anomalies coûteuses en production. Elle renforce aussi la <strong>confiance</strong> de l'équipe dans le code livré et simplifie les refactorings ultérieurs.</p>
+
+                <h3>2. Darwin Simulator</h3>
+                <p>J'applique le TDD pour fiabiliser la <strong>logique d'évolution des entités simulées</strong>. Les tests garantissent le bon fonctionnement de l'algorithme génétique et permettent d'expérimenter en toute sécurité.</p>
+                <p><a href="../projets/darwin-simulator.html" class="project-link" style="padding-left:0">→ Voir la réalisation complète</a></p>
+            </section>
+
+            <!-- Mon autocritique / Bilan critique -->
+            <section class="content-section">
+                <h2>Mon niveau en TDD</h2>
+                <p>Je maîtrise aujourd'hui les <strong>principes fondamentaux du TDD</strong> et leur mise en œuvre concrète dans un environnement .NET/C#. Je sais rédiger des tests unitaires et des tests d'intégration ainsi que structurer un projet pour qu'il soit facilement testable.</p>
+
+                <div class="evolution-list">
+                    <div class="evolution-item">
+                        <h4><span class="material-icons">check_circle</span> Points forts</h4>
+                        <ul>
+                            <li>Maîtrise des principes fondamentaux du TDD</li>
+                            <li>Rédaction de tests unitaires et d'intégration</li>
+                            <li>Structuration de projets testables</li>
+                            <li>Expérience en environnement .NET/C# avec xUnit</li>
+                            <li>Introduction du TDD dans une équipe</li>
+                        </ul>
+                    </div>
+                    <div class="evolution-item">
+                        <h4><span class="material-icons">trending_up</span> Axes d'amélioration</h4>
+                        <ul>
+                            <li>Couverture de test à grande échelle</li>
+                            <li>Automatisation complète des pipelines de test</li>
+                            <li>Benchmark tests (performance et robustesse)</li>
+                            <li>Tests d'intégration sur microservices</li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <p>Le TDD occupe une place importante dans mon profil d'expert : il influence directement la <strong>qualité de mon code</strong> et ma manière de concevoir des solutions robustes.</p>
+            </section>
+
+            <!-- Mon évolution dans cette compétence -->
+            <section class="content-section">
+                <h2>Mon Projet Personnel et Professionnel</h2>
+                
+                <p>Je souhaite approfondir ma pratique du TDD dans des environnements plus complexes : tests d'intégration sur <strong>microservices</strong> et pipelines <strong>CI/CD automatisés</strong>, <strong>Benchmark tests</strong>. Mon objectif est d'atteindre un niveau d'expertise où les tests deviennent un <strong>outil de conception</strong>, et non une contrainte supplémentaire.</p>
+
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3><span class="material-icons">speed</span> Benchmark tests</h3>
+                        <p>Approfondir les tests de performance et de robustesse du code.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">hub</span> Tests d'intégration sur microservices</h3>
+                        <p>Maîtriser les tests d'intégration dans une architecture microservices distribuée.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">rocket_launch</span> CI/CD</h3>
+                        <p>Automatiser complètement les pipelines de test dans mes projets.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Réalisations rattachées -->
+            <section class="content-section">
+                <h2>Réalisations Rattachées</h2>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3>Endpoint GRDF / Actility</h3>
+                        <p>Développement de services robustes grâce à une approche TDD et des tests d'intégration automatisés.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>Darwin Simulator</h3>
+                        <p>Application du TDD pour fiabiliser la logique d'évolution des entités simulées.</p>
+                        <a href="../projets/darwin-simulator.html" class="project-link" style="padding:10px 0 0 0">Voir le projet →</a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mon Portfolio. Tous droits réservés.</p>
+            <div class="social-links">
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="../diffusion.js"></script>
+</body>
+</html>

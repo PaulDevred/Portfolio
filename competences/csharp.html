@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C# - Compétence | Portfolio</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../projet.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">Mon Portfolio</div>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#accueil">Accueil</a></li>
+                    <li><a href="../index.html#projets">Projets</a></li>
+                    <li><a href="../timeline.html">Mon Parcours</a></li>
+                    <li><a href="../index.html#competences">Compétences</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Competence Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <a href="../index.html#competences" class="back-link">← Retour aux compétences</a>
+            <h1>C# / .NET</h1>
+            <p class="project-subtitle">Développement Backend & Applications</p>
+            <div class="project-tags-hero">
+                <span class="tag">C#</span>
+                <span class="tag">.NET</span>
+                <span class="tag">API REST</span>
+                <span class="tag">Azure</span>
+                <span class="tag">Unity</span>
+                <span class="tag">xUnit</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competence Content -->
+    <main class="project-content">
+        <div class="container">
+            
+            <!-- Ma définition -->
+            <section class="content-section">
+                <h2>Ma Vision du C#</h2>
+                <p>Le <strong>C#</strong> est un langage que j'apprécie pour son équilibre entre <strong>performance</strong>, <strong>clarté</strong> et <strong>puissance</strong>. Il me permet de concevoir des applications robustes, maintenables et orientées métier, aussi bien dans des contextes professionnels (API, intégrations, automatisations) que dans des projets d'étude.</p>
+                
+                <p>Dans mon alternance chez <strong>Iothink-Solutions</strong>, spécialisée dans l'IoT, cette compétence a été essentielle. J'ai pu exploiter pleinement la richesse de l'écosystème <strong>.NET</strong> pour concevoir des services fiables et sécurisés, exploitables en production.</p>
+                
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3><span class="material-icons">dns</span> Backend</h3>
+                        <p>Gestion de données, logique métier, API REST et intégrations complexes.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">web</span> Frontend</h3>
+                        <p>Développement via Razor Pages dans l'écosystème .NET.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">security</span> Sécurité</h3>
+                        <p>OAuth2/OpenID Connect, gestion des secrets, chiffrement et validation.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mes éléments de preuve -->
+            <section class="content-section highlight-section">
+                <h2>Ce que je développe en C#</h2>
+
+                <h3>1. Intégration de données externes (GRDF, Actility)</h3>
+                <p>Je conçois plusieurs outils en C# permettant d'intégrer des données d'<strong>API tierces</strong>, notamment celles de <strong>GRDF</strong> et <strong>Actility</strong>. Ces outils permettent de rendre les données exploitables par nos clients via les systèmes internes de l'entreprise.</p>
+                <p>Ce développement vise à positionner notre plateforme comme <strong>tiers autorisé</strong> dans la gestion de données énergétiques : un rôle qui demande une sécurité et une fiabilité à toute épreuve.</p>
+                <div class="neural-io">
+                    <div class="io-column">
+                        <h4>Fonctionnalités intégrées</h4>
+                        <ul>
+                            <li>Sécurisation des flux de données</li>
+                            <li>Traçabilité des autorisations</li>
+                            <li>Intégration API complexes</li>
+                            <li>Module de gestion du consentement automatisé</li>
+                            <li>Intégration DocuSign</li>
+                            <li>Respect des règles de confidentialité</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>2. Synchronisation entre logiciels internes</h3>
+                <p>Je développe un projet en C# destiné à <strong>lier deux logiciels internes</strong> afin de synchroniser leurs données en temps réel. Ce projet combine <strong>API REST</strong> et <strong>webhooks</strong> pour détecter et propager les changements d'état.</p>
+                <p>Les données reçues sont ensuite traitées et interprétées selon une logique métier spécifique. J'ajoute une <strong>interface de configuration</strong> afin de permettre aux équipes d'adapter le comportement du programme à leurs besoins sans intervention technique.</p>
+                <div class="results-grid">
+                    <div class="result-item">
+                        <span class="result-number"><span class="material-icons" style="font-size:36px">api</span></span>
+                        <span class="result-label">API REST</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number"><span class="material-icons" style="font-size:36px">webhook</span></span>
+                        <span class="result-label">Webhooks</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number"><span class="material-icons" style="font-size:36px">settings</span></span>
+                        <span class="result-label">Interface de configuration</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-number"><span class="material-icons" style="font-size:36px">code</span></span>
+                        <span class="result-label">Code modulaire</span>
+                    </div>
+                </div>
+                <p><a href="../projets/interconnexion.html" class="project-link" style="padding-left:0">→ Voir la réalisation complète</a></p>
+
+                <h3>3. Darwin Simulator (Unity)</h3>
+                <p>Dans le cadre d'un projet universitaire nommé <strong>Darwin Simulator</strong>, j'ai exploité le C# au sein d'Unity pour simuler un écosystème évolutif. J'y ai implémenté un <strong>algorithme génétique NEAT</strong> (NeuroEvolution of Augmenting Topologies) permettant à des entités virtuelles d'apprendre et d'adapter leur comportement.</p>
+                <p>Ce projet m'a permis de consolider ma maîtrise des <strong>concepts orientés objet</strong> et de la <strong>programmation algorithmique avancée</strong>.</p>
+                <p><a href="../projets/darwin-simulator.html" class="project-link" style="padding-left:0">→ Voir la réalisation complète</a></p>
+            </section>
+
+            <!-- Mon autocritique / Bilan critique -->
+            <section class="content-section">
+                <h2>Mon niveau en C#</h2>
+                <p>Je considère aujourd'hui avoir une <strong>bonne maîtrise du langage C# et de son écosystème .NET</strong>. J'ai acquis une solide expérience dans la conception de code clair, modulaire et documenté, capable d'évoluer sur la durée.</p>
+
+                <div class="evolution-list">
+                    <div class="evolution-item">
+                        <h4><span class="material-icons">check_circle</span> Points forts</h4>
+                        <ul>
+                            <li>Conception d'architectures logiques cohérentes</li>
+                            <li>Interaction avec des API complexes</li>
+                            <li>Anticipation des contraintes de sécurité et de performance</li>
+                            <li>Application des principes du clean code et design patterns</li>
+                            <li>Utilisation régulière de <strong>xUnit</strong> pour les tests unitaires</li>
+                        </ul>
+                    </div>
+                    <div class="evolution-item">
+                        <h4><span class="material-icons">trending_up</span> Axes d'amélioration</h4>
+                        <ul>
+                            <li>Exploitation des outils <strong>CI/CD</strong> dans un contexte .NET</li>
+                            <li>Maîtrise de la gestion de la mémoire et performances bas niveau (Garbage Collector, Span&lt;T&gt;, structs immuables)</li>
+                            <li>Tests de charge (BenchmarkDotNet)</li>
+                            <li>Stratégies de test dans les architectures microservices</li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <p>Ma maîtrise du C# est particulièrement adaptée aux contextes de <strong>développement backend</strong>, d'<strong>intégration API</strong> et de <strong>logique métier complexe</strong>. Je suis moins à l'aise sur les aspects de performance bas niveau et d'optimisation mémoire avancée, mais ces compétences font partie de mon plan de progression.</p>
+            </section>
+
+            <!-- Mon évolution dans cette compétence -->
+            <section class="content-section">
+                <h2>Mon Projet Personnel et Professionnel</h2>
+                
+                <p>À moyen terme, je veux faire du <strong>C#</strong> une compétence centrale dans mon activité de <strong>développeur backend freelance</strong>. J'ai déjà approfondi ma pratique du langage dans des environnements à grande échelle, notamment via le <strong>cloud Azure</strong> et les <strong>pipelines DevOps</strong>.</p>
+
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3><span class="material-icons">school</span> Formations prévues</h3>
+                        <p>Poursuivre ma formation autour des nouvelles versions de .NET et des bonnes pratiques de performance et de sécurité.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">explore</span> Veille active</h3>
+                        <p>Maintenir une veille active et expérimenter régulièrement sur des projets personnels et professionnels.</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3><span class="material-icons">rocket_launch</span> Objectif</h3>
+                        <p>Tester de nouveaux paradigmes et consolider mon expertise pour devenir référent sur les technologies .NET.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Réalisations rattachées -->
+            <section class="content-section">
+                <h2>Réalisations Rattachées</h2>
+                <div class="objectives-grid">
+                    <div class="objective-card">
+                        <h3>Endpoint GRDF</h3>
+                        <p>Développement d'un service d'intégration et de gestion sécurisée de données énergétiques via API C#/.NET</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>Synchronisation logicielle</h3>
+                        <p>Liaison temps réel entre deux systèmes métiers avec API, webhooks et interface utilisateur configurable.</p>
+                        <a href="../projets/interconnexion.html" class="project-link" style="padding:10px 0 0 0">Voir le projet →</a>
+                    </div>
+                    <div class="objective-card">
+                        <h3>Darwin Simulator</h3>
+                        <p>Implémentation en C# d'un algorithme génétique NEAT simulant l'évolution d'espèces virtuelles.</p>
+                        <a href="../projets/darwin-simulator.html" class="project-link" style="padding:10px 0 0 0">Voir le projet →</a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mon Portfolio. Tous droits réservés.</p>
+            <div class="social-links">
+                <a href="#">GitHub</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="../diffusion.js"></script>
+</body>
+</html>

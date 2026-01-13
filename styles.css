@@ -2,6 +2,10 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 :root {
@@ -260,6 +264,32 @@ header {
 .skill-item p {
     color: #666;
     font-size: 14px;
+}
+
+/* Skill Link (compétences cliquables) */
+a.skill-link {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    position: relative;
+}
+
+a.skill-link:hover {
+    background-color: #d5e8f7;
+    border-left-color: var(--primary-color);
+}
+
+.skill-arrow {
+    display: block;
+    margin-top: 12px;
+    color: var(--secondary-color);
+    font-size: 13px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+a.skill-link:hover .skill-arrow {
+    color: var(--primary-color);
 }
 
 /* Contact Section */

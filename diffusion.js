@@ -19,8 +19,8 @@ class DiffusionSimulation {
         this.killSpeed = 0.0011;
         this.time = 0;
         
-        // Grilles - utiliser une résolution plus basse pour plus de performance
-        this.resolution = 4;
+        // Grilles - résolution adaptative selon la taille de l'écran pour de meilleures performances
+        this.resolution = this.calculateAdaptiveResolution();
         this.gridW = Math.floor(this.width / this.resolution);
         this.gridH = Math.floor(this.height / this.resolution);
         
@@ -279,6 +279,10 @@ class DiffusionSimulation {
     handleResize() {
         this.width = this.canvas.width = window.innerWidth;
         this.height = this.canvas.height = window.innerHeight;
+        
+        // Recalculer la résolution adaptative pour le nouvel écran
+        this.resolution = this.calculateAdaptiveResolution();
+        
         this.gridW = Math.floor(this.width / this.resolution);
         this.gridH = Math.floor(this.height / this.resolution);
         
@@ -291,6 +295,33 @@ class DiffusionSimulation {
         
         this.imageData = this.ctx.createImageData(this.width, this.height);
         this.data = this.imageData.data;
+    }
+    
+    // Calcule une résolution adaptative basée sur la taille de l'écran
+    // Plus l'écran est grand, plus la résolution est basse pour maintenir les performances
+    calculateAdaptiveResolution() {
+        const totalPixels = window.innerWidth * window.innerHeight;
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const effectivePixels = totalPixels * devicePixelRatio;
+        
+        // Seuils basés sur le nombre de pixels effectifs
+        // ~2M pixels = 1920x1080 (Full HD)
+        // ~8M pixels = 3840x2160 (4K)
+        // ~33M pixels = 7680x4320 (8K)
+        
+        if (effectivePixels > 12000000) {
+            // Très grand écran (4K+ avec high DPI) - résolution très basse
+            return 8;
+        } else if (effectivePixels > 6000000) {
+            // Grand écran (4K ou 1440p avec high DPI)
+            return 6;
+        } else if (effectivePixels > 3000000) {
+            // Écran moyen-grand (1440p ou Full HD avec high DPI)
+            return 5;
+        } else {
+            // Écran standard (Full HD ou moins)
+            return 4;
+        }
     }
 }
 
