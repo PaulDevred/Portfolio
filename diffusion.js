@@ -2,9 +2,14 @@
 class DiffusionSimulation {
     constructor(canvas) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.width = canvas.width = window.innerWidth;
-        this.height = canvas.height = window.innerHeight;
+        // Activer le lissage pour un upscaling doux
+        this.ctx = canvas.getContext('2d', { alpha: false });
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
+        
+        // Dimensions écran
+        this.screenWidth = window.innerWidth;
+        this.screenHeight = window.innerHeight;
         
         // Paramètres de la réaction-diffusion
         this.dA = 1.0;
@@ -19,10 +24,16 @@ class DiffusionSimulation {
         this.killSpeed = 0.0011;
         this.time = 0;
         
-        // Grilles - résolution adaptative selon la taille de l'écran pour de meilleures performances
+        // Grilles - résolution adaptative (peut être plus fine maintenant)
         this.resolution = this.calculateAdaptiveResolution();
-        this.gridW = Math.floor(this.width / this.resolution);
-        this.gridH = Math.floor(this.height / this.resolution);
+        this.gridW = Math.floor(this.screenWidth / this.resolution);
+        this.gridH = Math.floor(this.screenHeight / this.resolution);
+        
+        // Canvas à la taille de la grille, CSS à la taille écran (upscaling navigateur)
+        this.canvas.width = this.gridW;
+        this.canvas.height = this.gridH;
+        this.canvas.style.width = this.screenWidth + 'px';
+        this.canvas.style.height = this.screenHeight + 'px';
         
         // Utiliser des typed arrays pour de meilleures performances
         const size = this.gridW * this.gridH;
@@ -33,7 +44,8 @@ class DiffusionSimulation {
         
         this.initializeWithSpots();
         
-        this.imageData = this.ctx.createImageData(this.width, this.height);
+        // ImageData à la taille de la grille (petit = rapide)
+        this.imageData = this.ctx.createImageData(this.gridW, this.gridH);
         this.data = this.imageData.data;
         
         // Pré-calculer la table de couleurs pour éviter les calculs HSL répétés
@@ -61,33 +73,800 @@ class DiffusionSimulation {
     }
     
     generateColorTable() {
-        // Pré-calculer 256 couleurs pour éviter les calculs en temps réel
-        // Gradient optimisé : plus de variations dans les valeurs basses (0-0.4)
-        // car la simulation génère principalement des valeurs dans cette plage
+        // ===== VARIANTES DE MIDNIGHT DREAM =====
+        // Décommentez la variante que vous voulez tester
+        
+        // VARIANTE 1 : Midnight Dream Classique
+        // return this.createPalette_MidnightDream_Classic();
+        
+        // VARIANTE 2 : Midnight Dream - Blanc Très Prononcé (noir → bleu → blanc intense)
+        // return this.createPalette_MidnightDream_WhitePronounced();
+        
+        // VARIANTE 3 : Midnight Dream - Violet
+        // return this.createPalette_MidnightDream_Violet();
+        
+        // VARIANTE 4 : Midnight Dream - Cyan
+        // return this.createPalette_MidnightDream_Cyan();
+        
+        // VARIANTE 5 : Midnight Dream - Rosé
+        return this.createPalette_MidnightDream_Rose();// !!!!!!!!!!!!!!!!!!!!!!!!
+        
+        // VARIANTE 6 : Midnight Dream - Plus Sombre
+        // return this.createPalette_MidnightDream_Darker();
+        
+        // VARIANTE 7 : Midnight Dream - Plus Clair
+        // return this.createPalette_MidnightDream_Lighter();
+        
+        // VARIANTE 8 : Midnight Dream - Turquoise
+        // return this.createPalette_MidnightDream_Turquoise();
+        
+        // VARIANTE 9 : Midnight Dream - Magenta
+        // return this.createPalette_MidnightDream_Magenta();
+        
+        // VARIANTE 10 : Midnight Dream - Glacier (bleu glacier → blanc glacé)
+        // return this.createPalette_MidnightDream_Glacier();
+    }
+    
+    // ===== PALETTES DE COULEURS =====
+    
+    createPalette_IndigoVioletRose() {
         const table = new Uint8Array(256 * 3);
         for (let i = 0; i < 256; i++) {
-            // Appliquer une courbe pour étirer les couleurs dans les valeurs basses
-            const t = Math.pow(i / 255, 0.6);
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.15) {
+                const lt = t / 0.15;
+                r = Math.round(25 + lt * 15);
+                g = Math.round(20 + lt * 25);
+                b = Math.round(70 + lt * 50);
+            } else if (t < 0.35) {
+                const lt = (t - 0.15) / 0.2;
+                r = Math.round(40 + lt * 30);
+                g = Math.round(45 + lt * 20);
+                b = Math.round(120 + lt * 60);
+            } else if (t < 0.55) {
+                const lt = (t - 0.35) / 0.2;
+                r = Math.round(70 + lt * 70);
+                g = Math.round(65 - lt * 20);
+                b = Math.round(180 + lt * 40);
+            } else if (t < 0.75) {
+                const lt = (t - 0.55) / 0.2;
+                r = Math.round(140 + lt * 80);
+                g = Math.round(45 + lt * 30);
+                b = Math.round(220 - lt * 20);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(220 + lt * 35);
+                g = Math.round(75 + lt * 100);
+                b = Math.round(200 - lt * 30);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_OceanProfond() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(5 + lt * 10);
+                g = Math.round(15 + lt * 25);
+                b = Math.round(40 + lt * 60);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(15 + lt * 35);
+                g = Math.round(40 + lt * 100);
+                b = Math.round(100 + lt * 100);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(50 + lt * 100);
+                g = Math.round(140 + lt * 100);
+                b = Math.round(200 + lt * 55);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(150 + lt * 50);
+                g = Math.round(240 - lt * 80);
+                b = Math.round(255);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(200 + lt * 55);
+                g = Math.round(160 + lt * 95);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_SunsetVibrant() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(50 + lt * 100);
+                g = Math.round(30 + lt * 50);
+                b = Math.round(20 + lt * 30);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(150 + lt * 100);
+                g = Math.round(80 + lt * 50);
+                b = Math.round(50 - lt * 30);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(250);
+                g = Math.round(130 - lt * 80);
+                b = Math.round(20 + lt * 80);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(255 - lt * 55);
+                g = Math.round(50 - lt * 30);
+                b = Math.round(100 + lt * 155);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(200 + lt * 55);
+                g = Math.round(20 + lt * 100);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_ForestNeon() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(10 + lt * 20);
+                g = Math.round(40 + lt * 60);
+                b = Math.round(20 + lt * 30);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(30 + lt * 30);
+                g = Math.round(100 + lt * 100);
+                b = Math.round(50 + lt * 100);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(60 - lt * 40);
+                g = Math.round(200 + lt * 55);
+                b = Math.round(150 + lt * 105);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(20 + lt * 100);
+                g = Math.round(255 - lt * 100);
+                b = Math.round(255 - lt * 100);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(120 + lt * 135);
+                g = Math.round(155 + lt * 100);
+                b = Math.round(155 + lt * 100);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_FireAndIce() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(10 + lt * 20);
+                g = Math.round(20 + lt * 60);
+                b = Math.round(80 + lt * 100);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(30 + lt * 30);
+                g = Math.round(80 + lt * 100);
+                b = Math.round(180 + lt * 75);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(60 + lt * 150);
+                g = Math.round(180 - lt * 100);
+                b = Math.round(255 - lt * 180);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(210 + lt * 45);
+                g = Math.round(80 - lt * 50);
+                b = Math.round(75 - lt * 75);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(255);
+                g = Math.round(30 + lt * 50);
+                b = Math.round(0 + lt * 20);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_AuroraBorealis() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(10 + lt * 30);
+                g = Math.round(60 + lt * 80);
+                b = Math.round(40 + lt * 60);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(40 + lt * 60);
+                g = Math.round(140 + lt * 115);
+                b = Math.round(100 + lt * 80);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(100 + lt * 100);
+                g = Math.round(255 - lt * 80);
+                b = Math.round(180 + lt * 50);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(200 + lt * 55);
+                g = Math.round(175 - lt * 100);
+                b = Math.round(230 + lt * 25);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(255 - lt * 55);
+                g = Math.round(75 + lt * 180);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_CandyAcid() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(100 + lt * 100);
+                g = Math.round(40 + lt * 60);
+                b = Math.round(80 + lt * 80);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(200 + lt * 55);
+                g = Math.round(100 + lt * 100);
+                b = Math.round(160 - lt * 80);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(255 - lt * 155);
+                g = Math.round(200 + lt * 55);
+                b = Math.round(80);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(100 - lt * 100);
+                g = Math.round(255 - lt * 50);
+                b = Math.round(80 - lt * 80);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(0 + lt * 50);
+                g = Math.round(205 + lt * 50);
+                b = Math.round(0 + lt * 100);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Classic() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(5 + lt * 15);
+                g = Math.round(5 + lt * 20);
+                b = Math.round(15 + lt * 40);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(20 + lt * 30);
+                g = Math.round(25 + lt * 80);
+                b = Math.round(55 + lt * 120);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(50 + lt * 100);
+                g = Math.round(105 + lt * 100);
+                b = Math.round(175 + lt * 80);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(150 + lt * 105);
+                g = Math.round(205 + lt * 50);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_WhitePronounced() {
+        // Noir → Bleu → BLANC TRÈS INTENSE
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(2 + lt * 10);
+                g = Math.round(2 + lt * 15);
+                b = Math.round(10 + lt * 35);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(12 + lt * 30);
+                g = Math.round(17 + lt * 80);
+                b = Math.round(45 + lt * 130);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(42 + lt * 120);
+                g = Math.round(97 + lt * 130);
+                b = Math.round(175 + lt * 80);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(162 + lt * 93);
+                g = Math.round(227 + lt * 28);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Violet() {
+        // Noir → Bleu → Violet → Blanc
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(5 + lt * 15);
+                g = Math.round(2 + lt * 10);
+                b = Math.round(20 + lt * 40);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(20 + lt * 50);
+                g = Math.round(12 + lt * 40);
+                b = Math.round(60 + lt * 130);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(70 + lt * 120);
+                g = Math.round(52 - lt * 30);
+                b = Math.round(190 + lt * 65);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(190 + lt * 65);
+                g = Math.round(22 + lt * 130);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Cyan() {
+        // Noir → Bleu → Cyan → Blanc
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(3 + lt * 12);
+                g = Math.round(8 + lt * 25);
+                b = Math.round(20 + lt * 40);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(15 + lt * 25);
+                g = Math.round(33 + lt * 90);
+                b = Math.round(60 + lt * 130);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(40 + lt * 80);
+                g = Math.round(123 + lt * 130);
+                b = Math.round(190 + lt * 65);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(120 + lt * 135);
+                g = Math.round(253);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Rose() {
+        // Noir → Bleu → Rose → Blanc
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(8 + lt * 15);
+                g = Math.round(5 + lt * 15);
+                b = Math.round(15 + lt * 45);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(23 + lt * 40);
+                g = Math.round(20 + lt * 60);
+                b = Math.round(60 + lt * 110);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(63 + lt * 110);
+                g = Math.round(80 + lt * 80);
+                b = Math.round(170 + lt * 50);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(173 + lt * 82);
+                g = Math.round(160 + lt * 95);
+                b = Math.round(220 + lt * 35);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Darker() {
+        // Très sombre au début (plus noir), puis bleu → blanc
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
             let r, g, b;
             
             if (t < 0.3) {
-                // Bleu profond à bleu-cyan (valeurs basses - mode passif)
                 const lt = t / 0.3;
-                r = Math.round(15 + lt * 35);
-                g = Math.round(25 + lt * 80);
-                b = Math.round(90 + lt * 100);
-            } else if (t < 0.6) {
-                // Bleu-cyan à violet (valeurs moyennes)
-                const lt = (t - 0.3) / 0.3;
-                r = Math.round(50 + lt * 100);
-                g = Math.round(105 - lt * 60);
-                b = Math.round(190 + lt * 50);
+                r = Math.round(1 + lt * 8);
+                g = Math.round(1 + lt * 10);
+                b = Math.round(5 + lt * 25);
+            } else if (t < 0.55) {
+                const lt = (t - 0.3) / 0.25;
+                r = Math.round(9 + lt * 25);
+                g = Math.round(11 + lt * 75);
+                b = Math.round(30 + lt * 130);
+            } else if (t < 0.8) {
+                const lt = (t - 0.55) / 0.25;
+                r = Math.round(34 + lt * 110);
+                g = Math.round(86 + lt * 110);
+                b = Math.round(160 + lt * 80);
             } else {
-                // Violet à magenta-rose (valeurs hautes - interaction souris)
-                const lt = (t - 0.6) / 0.4;
-                r = Math.round(150 + lt * 105);
-                g = Math.round(45 + lt * 80);
-                b = Math.round(240 - lt * 40);
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(144 + lt * 111);
+                g = Math.round(196 + lt * 59);
+                b = Math.round(240 + lt * 15);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Lighter() {
+        // Plus clair partout, blanc plus précoce
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(10 + lt * 20);
+                g = Math.round(15 + lt * 35);
+                b = Math.round(30 + lt * 50);
+            } else if (t < 0.45) {
+                const lt = (t - 0.2) / 0.25;
+                r = Math.round(30 + lt * 40);
+                g = Math.round(50 + lt * 90);
+                b = Math.round(80 + lt * 120);
+            } else if (t < 0.7) {
+                const lt = (t - 0.45) / 0.25;
+                r = Math.round(70 + lt * 110);
+                g = Math.round(140 + lt * 85);
+                b = Math.round(200 + lt * 40);
+            } else {
+                const lt = (t - 0.7) / 0.3;
+                r = Math.round(180 + lt * 75);
+                g = Math.round(225 + lt * 30);
+                b = Math.round(240 + lt * 15);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Turquoise() {
+        // Noir → Bleu → Turquoise → Blanc
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(5 + lt * 10);
+                g = Math.round(15 + lt * 35);
+                b = Math.round(25 + lt * 45);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(15 + lt * 20);
+                g = Math.round(50 + lt * 100);
+                b = Math.round(70 + lt * 120);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(35 + lt * 90);
+                g = Math.round(150 + lt * 105);
+                b = Math.round(190 + lt * 65);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(125 + lt * 130);
+                g = Math.round(255);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Magenta() {
+        // Noir → Bleu → Magenta → Blanc
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(10 + lt * 15);
+                g = Math.round(5 + lt * 10);
+                b = Math.round(20 + lt * 45);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(25 + lt * 50);
+                g = Math.round(15 + lt * 30);
+                b = Math.round(65 + lt * 130);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(75 + lt * 130);
+                g = Math.round(45 - lt * 20);
+                b = Math.round(195 + lt * 60);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(205 + lt * 50);
+                g = Math.round(25 + lt * 130);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MidnightDream_Glacier() {
+        // Bleu glacier profond → Bleu glacier → Blanc glacé
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(8 + lt * 12);
+                g = Math.round(20 + lt * 30);
+                b = Math.round(35 + lt * 35);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(20 + lt * 35);
+                g = Math.round(50 + lt * 85);
+                b = Math.round(70 + lt * 115);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(55 + lt * 105);
+                g = Math.round(135 + lt * 110);
+                b = Math.round(185 + lt * 60);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(160 + lt * 95);
+                g = Math.round(245 + lt * 10);
+                b = Math.round(245 + lt * 10);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_MonochromeBleu() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            // Tous les tons du bleu, du foncé au clair
+            r = Math.round(10 + t * 190);
+            g = Math.round(40 + t * 180);
+            b = Math.round(100 + t * 155);
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_LavaSmoke() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(50 + lt * 40);
+                g = Math.round(50 + lt * 40);
+                b = Math.round(50 + lt * 40);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(90 + lt * 100);
+                g = Math.round(90 - lt * 50);
+                b = Math.round(90 - lt * 80);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(190 + lt * 65);
+                g = Math.round(40 + lt * 80);
+                b = Math.round(10 + lt * 50);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(255);
+                g = Math.round(120 + lt * 60);
+                b = Math.round(60 + lt * 100);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_Cyberpunk() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.25) {
+                const lt = t / 0.25;
+                r = Math.round(80 + lt * 100);
+                g = Math.round(10 + lt * 40);
+                b = Math.round(100 + lt * 100);
+            } else if (t < 0.5) {
+                const lt = (t - 0.25) / 0.25;
+                r = Math.round(180 + lt * 75);
+                g = Math.round(50 + lt * 100);
+                b = Math.round(200 - lt * 100);
+            } else if (t < 0.75) {
+                const lt = (t - 0.5) / 0.25;
+                r = Math.round(255 - lt * 180);
+                g = Math.round(150 + lt * 105);
+                b = Math.round(100 + lt * 155);
+            } else {
+                const lt = (t - 0.75) / 0.25;
+                r = Math.round(75 + lt * 180);
+                g = Math.round(255);
+                b = Math.round(255);
+            }
+            
+            table[i * 3] = r;
+            table[i * 3 + 1] = g;
+            table[i * 3 + 2] = b;
+        }
+        return table;
+    }
+    
+    createPalette_Tropical() {
+        const table = new Uint8Array(256 * 3);
+        for (let i = 0; i < 256; i++) {
+            const t = Math.pow(i / 255, 0.55);
+            let r, g, b;
+            
+            if (t < 0.2) {
+                const lt = t / 0.2;
+                r = Math.round(10 + lt * 30);
+                g = Math.round(80 + lt * 80);
+                b = Math.round(30 + lt * 50);
+            } else if (t < 0.4) {
+                const lt = (t - 0.2) / 0.2;
+                r = Math.round(40 + lt * 50);
+                g = Math.round(160 + lt * 95);
+                b = Math.round(80 + lt * 175);
+            } else if (t < 0.6) {
+                const lt = (t - 0.4) / 0.2;
+                r = Math.round(90 + lt * 100);
+                g = Math.round(255 - lt * 50);
+                b = Math.round(255 - lt * 80);
+            } else if (t < 0.8) {
+                const lt = (t - 0.6) / 0.2;
+                r = Math.round(190 + lt * 50);
+                g = Math.round(205 - lt * 100);
+                b = Math.round(175 - lt * 75);
+            } else {
+                const lt = (t - 0.8) / 0.2;
+                r = Math.round(240 + lt * 15);
+                g = Math.round(105 + lt * 100);
+                b = Math.round(100 + lt * 80);
             }
             
             table[i * 3] = r;
@@ -140,13 +919,11 @@ class DiffusionSimulation {
     
     updateMousePosition(e) {
         const rect = this.canvas.getBoundingClientRect();
-        // Prendre en compte le ratio entre taille CSS et taille du canvas
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
-        const canvasX = (e.clientX - rect.left) * scaleX;
-        const canvasY = (e.clientY - rect.top) * scaleY;
-        this.mouseX = Math.floor(canvasX / this.resolution);
-        this.mouseY = Math.floor(canvasY / this.resolution);
+        // Convertir position écran en position grille
+        const scaleX = this.gridW / rect.width;
+        const scaleY = this.gridH / rect.height;
+        this.mouseX = Math.floor((e.clientX - rect.left) * scaleX);
+        this.mouseY = Math.floor((e.clientY - rect.top) * scaleY);
     }
     
     paintAtMouse() {
@@ -245,46 +1022,24 @@ class DiffusionSimulation {
     render() {
         const gridW = this.gridW;
         const gridH = this.gridH;
-        const resolution = this.resolution;
-        const width = this.width;
-        const height = this.height;
-        const A = this.A;
         const B = this.B;
         const data = this.data;
         const colorTable = this.colorTable;
         
+        // Rendu direct 1:1 sur le petit canvas (beaucoup plus rapide)
         for (let y = 0; y < gridH; y++) {
             const yRow = y * gridW;
-            const pyBase = y * resolution;
+            const rowOffset = y * gridW * 4;
             
             for (let x = 0; x < gridW; x++) {
-                const idx = yRow + x;
-                const b = B[idx];
+                const b = B[yRow + x];
+                const colorIdx = (b * 255 | 0) * 3;
+                const pixelIdx = rowOffset + x * 4;
                 
-                // Utiliser la table de couleurs pré-calculée
-                const colorIdx = Math.floor(b * 255) * 3;
-                const r = colorTable[colorIdx];
-                const g = colorTable[colorIdx + 1];
-                const bl = colorTable[colorIdx + 2];
-                
-                const pxBase = x * resolution;
-                
-                // Remplir le carré de résolution
-                for (let py = 0; py < resolution; py++) {
-                    const rowY = pyBase + py;
-                    if (rowY >= height) break;
-                    const rowOffset = rowY * width;
-                    
-                    for (let px = 0; px < resolution; px++) {
-                        const colX = pxBase + px;
-                        if (colX >= width) break;
-                        const pixelIdx = (rowOffset + colX) * 4;
-                        data[pixelIdx] = r;
-                        data[pixelIdx + 1] = g;
-                        data[pixelIdx + 2] = bl;
-                        data[pixelIdx + 3] = 255;
-                    }
-                }
+                data[pixelIdx] = colorTable[colorIdx];
+                data[pixelIdx + 1] = colorTable[colorIdx + 1];
+                data[pixelIdx + 2] = colorTable[colorIdx + 2];
+                data[pixelIdx + 3] = 255;
             }
         }
         
@@ -298,14 +1053,20 @@ class DiffusionSimulation {
     }
     
     handleResize() {
-        this.width = this.canvas.width = window.innerWidth;
-        this.height = this.canvas.height = window.innerHeight;
+        this.screenWidth = window.innerWidth;
+        this.screenHeight = window.innerHeight;
         
         // Recalculer la résolution adaptative pour le nouvel écran
         this.resolution = this.calculateAdaptiveResolution();
         
-        this.gridW = Math.floor(this.width / this.resolution);
-        this.gridH = Math.floor(this.height / this.resolution);
+        this.gridW = Math.floor(this.screenWidth / this.resolution);
+        this.gridH = Math.floor(this.screenHeight / this.resolution);
+        
+        // Canvas à la taille de la grille, CSS à la taille écran
+        this.canvas.width = this.gridW;
+        this.canvas.height = this.gridH;
+        this.canvas.style.width = this.screenWidth + 'px';
+        this.canvas.style.height = this.screenHeight + 'px';
         
         const size = this.gridW * this.gridH;
         this.A = new Float32Array(size).fill(1);
@@ -314,34 +1075,30 @@ class DiffusionSimulation {
         this.nextB = new Float32Array(size).fill(0);
         this.initializeWithSpots();
         
-        this.imageData = this.ctx.createImageData(this.width, this.height);
+        this.imageData = this.ctx.createImageData(this.gridW, this.gridH);
         this.data = this.imageData.data;
     }
     
     // Calcule une résolution adaptative basée sur la taille de l'écran
-    // Plus l'écran est grand, plus la résolution est basse pour maintenir les performances
+    // Grâce à l'optimisation du rendu, on peut utiliser des résolutions plus fines
     calculateAdaptiveResolution() {
         const totalPixels = window.innerWidth * window.innerHeight;
         const devicePixelRatio = window.devicePixelRatio || 1;
         const effectivePixels = totalPixels * devicePixelRatio;
         
-        // Seuils basés sur le nombre de pixels effectifs
-        // ~2M pixels = 1920x1080 (Full HD)
-        // ~8M pixels = 3840x2160 (4K)
-        // ~33M pixels = 7680x4320 (8K)
-        
+        // Seuils ajustés - résolutions plus fines grâce à l'optimisation
         if (effectivePixels > 12000000) {
-            // Très grand écran (4K+ avec high DPI) - résolution très basse
-            return 8;
+            // Très grand écran (4K+ avec high DPI)
+            return 6;
         } else if (effectivePixels > 6000000) {
             // Grand écran (4K ou 1440p avec high DPI)
-            return 6;
+            return 5;
         } else if (effectivePixels > 3000000) {
             // Écran moyen-grand (1440p ou Full HD avec high DPI)
-            return 5;
+            return 4;
         } else {
             // Écran standard (Full HD ou moins)
-            return 4;
+            return 3;
         }
     }
 }

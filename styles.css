@@ -33,9 +33,11 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
     z-index: -1;
+    /* Lissage lors de l'upscaling - rend les pixels moins visibles */
+    image-rendering: auto;
+    -webkit-filter: blur(0.5px);
+    filter: blur(0.5px);
 }
 
 /* Contenu au-dessus du canvas */
