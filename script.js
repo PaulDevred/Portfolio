@@ -2,6 +2,38 @@
 // NAVIGATION SPA - Garder le background intact
 // ===========================================
 (function() {
+    // Fonction pour charger les CSS dynamiquement
+    function loadStylesheets(doc) {
+        const newStyles = doc.querySelectorAll('link[rel="stylesheet"]');
+        const currentStyles = document.querySelectorAll('link[rel="stylesheet"]');
+        
+        // Récupérer les URLs des styles actuels
+        const currentStyleUrls = new Set();
+        currentStyles.forEach(style => {
+            currentStyleUrls.add(style.href);
+        });
+        
+        // Ajouter les nouveaux styles qui ne sont pas déjà présents
+        newStyles.forEach(style => {
+            if (!currentStyleUrls.has(style.href)) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = style.href;
+                document.head.appendChild(link);
+            }
+        });
+    }
+    
+    // Fonction pour réexécuter les scripts de la page
+    function executeScripts() {
+        // Réinitialiser timeline.js si présent
+        if (typeof initTimeline === 'function') {
+            initTimeline();
+        }
+        // Réinitialiser les fonctionnalités de page
+        initPageFeatures();
+    }
+    
     // Fonction pour charger une page via AJAX sans recharger
     async function navigateTo(url) {
         try {
@@ -11,8 +43,13 @@
             const hash = urlObj.hash;
             const currentPathname = new URL(window.location.href, window.location.origin).pathname;
             
+            // Normaliser les chemins (enlever index.html à la fin)
+            const normalizedPathname = pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            const normalizedCurrentPathname = currentPathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            
             // Si on est sur la même page, juste scroller vers l'ancre
-            if (pathname === currentPathname) {
+            if (normalizedPathname === normalizedCurrentPathname || 
+                (pathname.endsWith('index.html') && currentPathname.endsWith('index.html'))) {
                 if (hash) {
                     const target = document.querySelector(hash);
                     if (target) {
@@ -33,6 +70,9 @@
             const html = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
+            
+            // Charger les CSS de la nouvelle page
+            loadStylesheets(doc);
             
             // Extraire le contenu principal (tout sauf le canvas)
             const newBody = doc.body;
@@ -64,8 +104,8 @@
             // Mettre à jour l'URL
             history.pushState({ url: url }, newTitle, url);
             
-            // Réinitialiser les fonctionnalités de la page
-            initPageFeatures();
+            // Réexécuter les scripts et fonctionnalités
+            executeScripts();
             
             // Gérer les ancres (#section) sans scroll initial
             if (hash) {
@@ -74,7 +114,7 @@
                     if (target) {
                         target.scrollIntoView({ behavior: 'smooth' });
                     }
-                }, 100);
+                }, 150);
             } else {
                 // Scroll en haut seulement s'il n'y a pas d'ancre
                 window.scrollTo(0, 0);
@@ -118,11 +158,9 @@
     
     // Gérer le bouton retour/avant du navigateur
     window.addEventListener('popstate', function(e) {
-        if (e.state && e.state.url) {
-            navigateTo(e.state.url);
-        } else {
-            navigateTo(window.location.href);
-        }
+        // Ne pas utiliser navigateTo car ça ajouterait à l'historique
+        // Recharger simplement la page pour le bouton retour
+        window.location.reload();
     });
     
     // Initialiser l'interception des liens

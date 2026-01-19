@@ -49,6 +49,7 @@ body {
     position: relative;
     background: var(--primary-dark);
     letter-spacing: 0.01em;
+    padding-top: 100px;
 }
 
 /* Canvas Background - Global */
@@ -84,42 +85,35 @@ a, button, input, textarea, .project-card, .skill-item, .nav-menu, .cta-button,
 
 /* Navigation - Glassmorphism */
 header {
-    position: sticky;
-    top: 0;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 1200px;
+    background: rgba(30, 18, 42, 0.85);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(30px);
     color: var(--white);
     z-index: 100;
-    border-bottom: var(--border-glow);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(173, 159, 192, 0.2);
+    border-radius: 40px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
 }
 
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 12px 30px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    height: 70px;
-}
-
-.logo {
-    font-size: 22px;
-    font-weight: 600;
-    flex-shrink: 0;
-    background: linear-gradient(135deg, var(--accent-light) 0%, var(--highlight-color) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 0.02em;
+    height: auto;
 }
 
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 30px;
+    gap: 40px;
     align-items: center;
 }
 
@@ -241,7 +235,8 @@ header {
 
 .projects h2,
 .skills h2,
-.contact h2 {
+.contact h2,
+.timeline-section h2 {
     font-size: 32px;
     margin-bottom: 60px;
     text-align: center;
@@ -254,7 +249,8 @@ header {
 
 .projects h2::after,
 .skills h2::after,
-.contact h2::after {
+.contact h2::after,
+.timeline-section h2::after {
     content: '';
     position: absolute;
     bottom: -20px;
