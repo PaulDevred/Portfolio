@@ -34,14 +34,25 @@
         initPageFeatures();
     }
     
+    // Fonction pour résoudre une URL relative en URL absolue
+    function resolveUrl(href) {
+        // Créer un élément <a> pour résoudre l'URL
+        const a = document.createElement('a');
+        a.href = href;
+        return a.href;
+    }
+    
     // Fonction pour charger une page via AJAX sans recharger
     async function navigateTo(url) {
         try {
+            // Résoudre l'URL relative en absolue
+            const resolvedUrl = resolveUrl(url);
+            
             // Extraire le chemin et le hash
-            const urlObj = new URL(url, window.location.origin);
+            const urlObj = new URL(resolvedUrl);
             const pathname = urlObj.pathname;
             const hash = urlObj.hash;
-            const currentPathname = new URL(window.location.href, window.location.origin).pathname;
+            const currentPathname = new URL(window.location.href).pathname;
             
             // Normaliser les chemins (enlever index.html à la fin)
             const normalizedPathname = pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
@@ -58,13 +69,13 @@
                 }
                 // Mettre à jour l'URL si le hash a changé
                 if (hash !== window.location.hash) {
-                    history.pushState({ url: url }, document.title, url);
+                    history.pushState({ url: resolvedUrl }, document.title, resolvedUrl);
                 }
                 return;
             }
             
-            // Changer de page
-            const response = await fetch(url);
+            // Changer de page - utiliser l'URL résolue
+            const response = await fetch(resolvedUrl);
             if (!response.ok) throw new Error('Page non trouvée');
             
             const html = await response.text();
@@ -101,8 +112,8 @@
             // Mettre à jour le titre
             document.title = newTitle;
             
-            // Mettre à jour l'URL
-            history.pushState({ url: url }, newTitle, url);
+            // Mettre à jour l'URL avec l'URL résolue
+            history.pushState({ url: resolvedUrl }, newTitle, resolvedUrl);
             
             // Scroll en haut IMMÉDIATEMENT avant tout le reste
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -129,8 +140,8 @@
             
         } catch (error) {
             console.error('Erreur de navigation:', error);
-            // Fallback: navigation classique
-            window.location.href = url;
+            // Fallback: navigation classique avec URL résolue
+            window.location.href = resolvedUrl;
         }
     }
     
@@ -143,8 +154,12 @@
             const href = link.getAttribute('href');
             if (!href) return;
             
-            // Ignorer les liens externes, les liens avec target, et les liens de protocole spécial
-            if (href.startsWith('http') && !href.startsWith(window.location.origin)) return;
+            // Ignorer les liens externes (vérification plus robuste)
+            const resolvedHref = resolveUrl(href);
+            const currentOrigin = window.location.origin;
+            if (!resolvedHref.startsWith(currentOrigin)) return;
+            
+            // Ignorer les liens de protocole spécial
             if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
             if (link.hasAttribute('target')) return;
             if (href.startsWith('#')) {
