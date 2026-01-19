@@ -104,10 +104,15 @@
             // Mettre à jour l'URL
             history.pushState({ url: url }, newTitle, url);
             
+            // Scroll en haut IMMÉDIATEMENT avant tout le reste
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            
             // Réexécuter les scripts et fonctionnalités
             executeScripts();
             
-            // Gérer les ancres (#section) sans scroll initial
+            // Gérer les ancres (#section) après un délai
             if (hash) {
                 setTimeout(() => {
                     const target = document.querySelector(hash);
@@ -116,8 +121,10 @@
                     }
                 }, 150);
             } else {
-                // Scroll en haut seulement s'il n'y a pas d'ancre
-                window.scrollTo(0, 0);
+                // Double vérification du scroll en haut après rendu
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                }, 50);
             }
             
         } catch (error) {
