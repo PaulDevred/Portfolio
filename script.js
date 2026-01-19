@@ -180,9 +180,72 @@
     
     // Gérer le bouton retour/avant du navigateur
     window.addEventListener('popstate', function(e) {
-        // Ne pas utiliser navigateTo car ça ajouterait à l'historique
-        // Recharger simplement la page pour le bouton retour
-        window.location.reload();
+        // Charger la page via SPA sans recharger complètement
+        // Récupérer l'URL actuelle du navigateur
+        const currentUrl = window.location.pathname + window.location.hash;
+        
+        // Charger le contenu sans ajouter à l'historique
+        try {
+            const resolvedUrl = resolveUrl(currentUrl);
+            
+            // Extraire le chemin et le hash
+            const urlObj = new URL(resolvedUrl);
+            const pathname = urlObj.pathname;
+            const hash = urlObj.hash;
+            
+            // Charger la page via AJAX
+            fetch(resolvedUrl).then(response => {
+                if (!response.ok) throw new Error('Page non trouvée');
+                return response.text();
+            }).then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Charger les CSS de la nouvelle page
+                loadStylesheets(doc);
+                
+                // Remplacer le contenu
+                const newBody = doc.body;
+                const canvas = document.getElementById('diffusionCanvas');
+                const currentBody = document.body;
+                
+                Array.from(currentBody.children).forEach(child => {
+                    if (child.id !== 'diffusionCanvas') {
+                        child.remove();
+                    }
+                });
+                
+                Array.from(newBody.children).forEach(child => {
+                    if (child.id !== 'diffusionCanvas' && child.tagName !== 'SCRIPT') {
+                        currentBody.appendChild(child.cloneNode(true));
+                    }
+                });
+                
+                document.title = doc.title;
+                executeScripts();
+                
+                // Scroll en haut
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+                
+                // Gérer les ancres
+                if (hash) {
+                    setTimeout(() => {
+                        const target = document.querySelector(hash);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 150);
+                }
+            }).catch(error => {
+                console.error('Erreur popstate:', error);
+                window.location.reload();
+            });
+        } catch (error) {
+            console.error('Erreur popstate:', error);
+            window.location.reload();
+        }
     });
     
     // Initialiser l'interception des liens
