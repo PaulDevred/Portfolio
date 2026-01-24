@@ -954,10 +954,27 @@ class DiffusionSimulation {
         const gridW = this.gridW;
         const gridH = this.gridH;
         const B = this.B;
+        
+        // Centre de la grille
+        const centerX = gridW / 2;
+        const centerY = gridH / 2;
+        
+        // Rayon de dispersion autour du centre (en pixels de grille)
+        const spreadRadius = Math.min(gridW, gridH) * 0.15;
+        
         for (let i = 0; i < 200; i++) {
-            const x = Math.floor(Math.random() * gridW);
-            const y = Math.floor(Math.random() * gridH);
-            B[y * gridW + x] = 0.8 + Math.random() * 0.2;
+            // Générer des points autour du centre avec une distribution gaussienne
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * spreadRadius;
+            
+            const x = Math.floor(centerX + Math.cos(angle) * distance);
+            const y = Math.floor(centerY + Math.sin(angle) * distance);
+            
+            // S'assurer que les coordonnées sont dans les limites
+            const clampedX = Math.max(0, Math.min(gridW - 1, x));
+            const clampedY = Math.max(0, Math.min(gridH - 1, y));
+            
+            B[clampedY * gridW + clampedX] = 0.8 + Math.random() * 0.2;
         }
     }
     
