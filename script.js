@@ -287,6 +287,37 @@ function initPageFeatures() {
         });
     }
 
+    // Menu hamburger responsive
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', function() {
+            menuToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            menuToggle.setAttribute('aria-expanded', 
+                menuToggle.classList.contains('active'));
+        });
+
+        // Fermer le menu quand on clique sur un lien
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Fermer le menu avec la touche Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
     // Add animation on scroll (optional)
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
