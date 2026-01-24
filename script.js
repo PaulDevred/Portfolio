@@ -292,9 +292,26 @@ function initPageFeatures() {
     const navMenu = document.querySelector('.nav-menu');
     
     if (menuToggle && navMenu) {
+        // Déplacer le bouton hamburger et le menu hors du header pour le mobile
+        if (window.innerWidth <= 768) {
+            document.body.appendChild(menuToggle);
+            document.body.appendChild(navMenu);
+        }
+
+        // Gérer le redimensionnement
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                if (menuToggle.parentElement !== document.body) {
+                    document.body.appendChild(menuToggle);
+                    document.body.appendChild(navMenu);
+                }
+            }
+        });
+
         menuToggle.addEventListener('click', function() {
             menuToggle.classList.toggle('active');
             navMenu.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
             menuToggle.setAttribute('aria-expanded', 
                 menuToggle.classList.contains('active'));
         });
@@ -304,6 +321,7 @@ function initPageFeatures() {
             link.addEventListener('click', function() {
                 menuToggle.classList.remove('active');
                 navMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
                 menuToggle.setAttribute('aria-expanded', 'false');
             });
         });
@@ -313,6 +331,7 @@ function initPageFeatures() {
             if (e.key === 'Escape' && navMenu.classList.contains('active')) {
                 menuToggle.classList.remove('active');
                 navMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
                 menuToggle.setAttribute('aria-expanded', 'false');
             }
         });
