@@ -2,27 +2,29 @@
 
 // Fonction d'initialisation de la timeline (réutilisable)
 function initTimeline() {
-    // Au clic sur h4 du niveau 2 UNIQUEMENT, toggle la visibilité de tout sauf le h4
-    document.querySelectorAll('.experience-level:nth-child(3) h4').forEach(h4 => {
+    // Au clic sur la carte collapsed ENTIÈRE, toggle la visibilité
+    document.querySelectorAll('.experience-level.collapsed').forEach(levelDiv => {
         // Éviter de rattacher les événements plusieurs fois
-        if (h4.dataset.initialized) return;
-        h4.dataset.initialized = 'true';
+        if (levelDiv.dataset.initialized) return;
+        levelDiv.dataset.initialized = 'true';
         
-        h4.style.cursor = 'pointer';
-        const parent = h4.closest('.experience-level');
+        levelDiv.style.cursor = 'pointer';
         
-        h4.addEventListener('click', function(e) {
+        levelDiv.addEventListener('click', function(e) {
+            // Ignorer les clics sur les liens
+            if (e.target.tagName === 'A') return;
+            
             e.stopPropagation();
             
             // Masque/affiche tout sauf le h4
-            const list = parent.querySelector('.experience-list');
+            const list = levelDiv.querySelector('.experience-list');
             if (list) {
                 if (list.style.display === 'none') {
                     list.style.display = '';
-                    parent.classList.remove('collapsed');
+                    levelDiv.classList.remove('collapsed');
                 } else {
                     list.style.display = 'none';
-                    parent.classList.add('collapsed');
+                    levelDiv.classList.add('collapsed');
                 }
             }
         });
